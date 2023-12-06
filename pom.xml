@@ -4,7 +4,7 @@
 	<groupId>org.sentrysoftware</groupId>
 	<artifactId>ipmi</artifactId>
 	<name>IPMI Java Client</name>
-	<version>1.0.00</version>
+	<version>1.1.00-SNAPSHOT</version>
 	<description>IPMI Client Library for Java</description>
   <packaging>jar</packaging>
 
@@ -43,7 +43,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/sentrysoftware/ipmi.git</connection>
 		<url>https://github.com/sentrysoftware/ipmi</url>
-		<tag>v1.0.00</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<developers>
@@ -88,7 +88,7 @@
 
 		<!-- Reproducible Build -->
 		<!-- See https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
-		<project.build.outputTimestamp>2023-12-06T17:55:27Z</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2023-12-06T17:56:40Z</project.build.outputTimestamp>
 	</properties>
 
 	<dependencyManagement>
