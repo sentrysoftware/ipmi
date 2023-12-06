@@ -1,6 +1,6 @@
 # IPMI Java Client
 
-The IPMI Java Client is a library that communicates with the IPMI host, fetches Field Replaceable Units (FRUs) and Sensors information then reports these information in a text output.
+The IPMI Java Client is a library that communicates with the IPMI host, fetches Field Replaceable Units (FRUs) and Sensors information then reports these information as a text output.
 
 ## How to run the IPMI Client inside Java
 
@@ -27,28 +27,29 @@ Invoke the IPMI Client:
 		final String username = "my-username";
 		final char[] password = new char[] { 'p', 'a', 's', 's' };
 		final boolean noAuth = false;
+		final byte[] bmcKey = null;
 		final long timeout = 120;
 
 		// Instantiates a new IPMI client configuration using the credentials above
-		final IpmiClientConfiguration ipmiConfiguration = new IpmiClientConfiguration(
+		final IpmiClientConfiguration ipmiClientConfiguration = new IpmiClientConfiguration(
 			hostname,
 			username,
 			password,
-			null,
+			bmcKey,
 			noAuth,
 			timeout
 		);
 
 		// Get the Chassis' status
-		final String chassisStatusResult = IpmiClient.getChassisStatusAsStringResult(ipmiConfiguration);
+		final String chassisStatusResult = IpmiClient.getChassisStatusAsStringResult(ipmiClientConfiguration);
 
-		System.out.println("Chassis status: ");
+		System.out.println("Chassis status:");
 		System.out.println(chassisStatusResult);
 
 		// Get FRUs and Sensors
-		final String sensorsResult = IpmiClient.getFrusAndSensorsAsStringResult(ipmiConfiguration);
+		final String sensorsResult = IpmiClient.getFrusAndSensorsAsStringResult(ipmiClientConfiguration);
 
-		System.out.println("Sensors: ");
+		System.out.println("Sensors:");
 		System.out.println(sensorsResult);
 	}
 ```

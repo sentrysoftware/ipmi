@@ -9,18 +9,23 @@
 
 	<custom>
 		<noDefaultLinks>true</noDefaultLinks>
-		<keywords>open source,oss, ipmi</keywords>
+		<keywords>verax, vxipmi, ipmi</keywords>
 	</custom>
 
-	<body>
+	<bannerLeft>
+		<src>images/sentry-logo-179x75px.png</src>
+		<href>https://sentrysoftware.com</href>
+	</bannerLeft>
 
+	<body>
+	
 		<links>
 			<item name="Fork on GitHub" href="${project.scm.url}" />
-			<!-- <item name="First Link" href="https://sentrysoftware.com" /> -->
 		</links>
 
 		<menu name="User Documentation">
 			<item name="Getting Started" href="index.html" />
+			<item name="Javadoc" href="apidocs/index.html" />
 		</menu>
 
 		<menu ref="reports" />
