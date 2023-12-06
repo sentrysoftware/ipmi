@@ -12,7 +12,7 @@ Add IPMI in the list of dependencies in your [Maven **pom.xml**](https://maven.a
 	<dependency>
 		<groupId>org.sentrysoftware</groupId>
 		<artifactId>ipmi</artifactId>
-		<version>1.0.00-SNAPSHOT</version> <!-- Use the latest version released -->
+		<version>${project.version}</version>
 	</dependency>
 </dependencies>
 ```
