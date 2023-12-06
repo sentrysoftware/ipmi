@@ -2,10 +2,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.sentrysoftware</groupId>
-	<artifactId>MYARTIFACT</artifactId>
-	<name>MY PROJECT</name>
-	<version>0.1.00-SNAPSHOT</version>
-	<description>SOME DESCRIPTION</description>
+	<artifactId>ipmi</artifactId>
+	<name>IPMI Java Client</name>
+	<version>1.0.00-SNAPSHOT</version>
+	<description>IPMI Client Library for Java</description>
   <packaging>jar</packaging>
 
 	<organization>
@@ -13,7 +13,7 @@
 		<url>https://sentrysoftware.com</url>
 	</organization>
 
-	<url>https://github.com/sentrysoftware/MYREPO</url>
+	<url>https://sentrysoftware.github.io/ipmi</url>
 	<inceptionYear>2023</inceptionYear>
 
 	<distributionManagement>
@@ -29,38 +29,57 @@
 
 	<licenses>
 		<license>
-			<name>Apache-2.0</name>
-			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<name>LGPL-3.0</name>
+			<url>https://www.gnu.org/licenses/lgpl+gpl-3.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/sentrysoftware/MYREPO/issues/</url>
+		<url>https://github.com/sentrysoftware/ipmi/issues/</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:https://github.com/sentrysoftware/MYREPO.git</connection>
-		<url>https://github.com/sentrysoftware/MYREPO</url>
+		<connection>scm:git:https://github.com/sentrysoftware/ipmi.git</connection>
+		<url>https://github.com/sentrysoftware/ipmi</url>
 		<tag>HEAD</tag>
 	</scm>
 
 	<developers>
 		<developer>
-			<name>MY NAME (@MY_ID)</name>
-			<email>MYNAME@sentrysoftware.com</email>
+			<name>Bertrand Martin (@bertysentry)</name>
+			<email>bertrand@sentrysoftware.com</email>
 			<roles>
-				<role>Project founder</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Nassim Boutekedjiret (@NassimBtk)</name>
+			<email>nassim@sentrysoftware.com</email>
+			<roles>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Kawtar Bakour (@KawtarBK9)</name>
+			<email>kawtar@sentrysoftware.com</email>
+			<roles>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Elyes Cherfa (@CherfaElyes)</name>
+			<email>elyes@sentrysoftware.com</email>
+			<roles>
+				<role>maintainer</role>
 			</roles>
 		</developer>
 	</developers>
 
 	<properties>
-		<!-- Java 11 -->
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-		<maven.compiler.release>11</maven.compiler.release>
+		<!-- Java 8 -->
+		<maven.compiler.release>8</maven.compiler.release>
 
 		<!-- UTF-8 -->
 		<project.build.encoding>UTF-8</project.build.encoding>
@@ -85,6 +104,11 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.30</version>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
@@ -153,7 +177,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<version>2.3.0</version>
 				<configuration>
-					<licenseName>apache_v2</licenseName>
+					<licenseName>lgpl_v3</licenseName>
 					<copyrightOwners>Sentry Software</copyrightOwners>
 					<copyrightStringFormat>Copyright %1$s %2$s</copyrightStringFormat>
 					<includes>
@@ -183,6 +207,9 @@
 			<!-- javadoc -->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<doclint>all,-missing</doclint>
+				</configuration>
 				<executions>
 					<execution>
 							<id>attach-javadocs</id>
@@ -304,7 +331,7 @@
 
 	<profiles>
 
-			<!-- Profile for releasing the project -->
+		<!-- Profile for releasing the project -->
 		<profile>
 			<id>release</id>
 			<build>

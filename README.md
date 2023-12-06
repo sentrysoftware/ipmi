@@ -1,11 +1,14 @@
-# oss-maven-template
+# IPMI Java Client
+![GitHub release (with filter)](https://img.shields.io/github/v/release/sentrysoftware/ipmi)
+![Build](https://img.shields.io/github/actions/workflow/status/sentrysoftware/ipmi/deploy.yml)
+![GitHub top language](https://img.shields.io/github/languages/top/sentrysoftware/ipmi)
+![License](https://img.shields.io/github/license/sentrysoftware/ipmi)
 
-![GitHub release (with filter)](https://img.shields.io/github/v/release/sentrysoftware/oss-maven-template)
-![Build](https://img.shields.io/github/actions/workflow/status/sentrysoftware/oss-maven-template/deploy.yml)
-![GitHub top language](https://img.shields.io/github/languages/top/sentrysoftware/oss-maven-template)
-![License](https://img.shields.io/github/license/sentrysoftware/oss-maven-template)
+This project is a fork of the excellent [IPMI Library for Java by Verax Systems](https://veraxsystems.com/ipmi-library-for-java/) ([see also](https://en.wikipedia.org/wiki/Verax_IPMI)). It is however not related to [another fork by rbuckland](https://github.com/rbuckland/ipmilib).
 
-Repository template for all Sentry open-source Java projects, published on Maven Central.
+See **[Project Documentation](https://sentrysoftware.github.io/ipmi)** and the [Javadoc](https://sentrysoftware.github.io/ipmi/apidocs) for more information on how to use this library in your code.
+
+The IPMI Java Client is a library that communicates with the IPMI host, fetches Field Replaceable Units (FRUs) and Sensors information then reports these information as a text output.
 
 ## Build instructions
 
@@ -31,7 +34,7 @@ But it is strongly recommended to only use [GitHub Actions "Release to Maven Cen
 
 ## License
 
-License is Apache-2. Each source file must include the Apache-2 header (build will fail otherwise).
+License is GNU General Lesser Public License (LGPL) version 3.0. Each source file includes the LGPL-3 header (build will fail otherwise).
 To update source files with the proper header, simply execute the below command:
 
 ```bash

@@ -4,23 +4,28 @@
 	<skin>
 		<groupId>org.sentrysoftware.maven</groupId>
 		<artifactId>sentry-maven-skin</artifactId>
-		<version>6.1.00</version>
+		<version>6.2.00</version>
 	</skin>
 
 	<custom>
 		<noDefaultLinks>true</noDefaultLinks>
-		<keywords>open source,oss</keywords>
+		<keywords>verax, vxipmi, ipmi</keywords>
 	</custom>
 
-	<body>
+	<bannerLeft>
+		<src>images/sentry-logo-179x75px.png</src>
+		<href>https://sentrysoftware.com</href>
+	</bannerLeft>
 
+	<body>
+	
 		<links>
 			<item name="Fork on GitHub" href="${project.scm.url}" />
-			<!-- <item name="First Link" href="https://sentrysoftware.com" /> -->
 		</links>
 
 		<menu name="User Documentation">
 			<item name="Getting Started" href="index.html" />
+			<item name="Javadoc" href="apidocs/index.html" />
 		</menu>
 
 		<menu ref="reports" />
