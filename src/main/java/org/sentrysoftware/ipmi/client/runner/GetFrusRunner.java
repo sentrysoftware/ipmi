@@ -23,7 +23,6 @@ package org.sentrysoftware.ipmi.client.runner;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -238,6 +237,6 @@ public class GetFrusRunner extends AbstractIpmiRunner<List<Fru>> {
 			// Nothing can be done
 		}
 
-		return Collections.emptyList();
+		return new ArrayList<>();
 	}
 }

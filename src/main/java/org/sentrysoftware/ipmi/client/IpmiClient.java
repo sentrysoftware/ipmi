@@ -24,7 +24,7 @@ package org.sentrysoftware.ipmi.client;
 
 import static org.sentrysoftware.ipmi.client.Utils.execute;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -80,7 +80,7 @@ public class IpmiClient {
 			try (GetSensorsRunner runner = new GetSensorsRunner(ipmiConfiguration)) {
 				runner.doRun();
 				List<Sensor> result = runner.getResult();
-				return result != null ? result : Collections.emptyList();
+				return result != null ? result : new ArrayList<>();
 			}
 		}, ipmiConfiguration.getTimeout() * 1000);
 	}
@@ -101,7 +101,7 @@ public class IpmiClient {
 			try (GetFrusRunner runner = new GetFrusRunner(ipmiConfiguration)) {
 				runner.doRun();
 				List<Fru> result = runner.getResult();
-				return result != null ? result : Collections.emptyList();
+				return result != null ? result : new ArrayList<>();
 			}
 		}, ipmiConfiguration.getTimeout() * 1000);
 	}
