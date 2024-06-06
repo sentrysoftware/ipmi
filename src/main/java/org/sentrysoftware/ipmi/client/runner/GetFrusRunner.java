@@ -71,7 +71,7 @@ public class GetFrusRunner extends AbstractIpmiRunner<List<Fru>> {
 	}
 
 	@Override
-	public void doRun() throws Exception {
+	public List<Fru> call() throws Exception {
 		final List<Fru> result = new ArrayList<>();
 
 		super.startSession();
@@ -122,7 +122,7 @@ public class GetFrusRunner extends AbstractIpmiRunner<List<Fru>> {
 
 		}
 
-		super.setResult(result);
+		return result;
 	}
 
 	/**

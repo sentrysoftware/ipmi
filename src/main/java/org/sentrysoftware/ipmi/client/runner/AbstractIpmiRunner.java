@@ -24,6 +24,7 @@ package org.sentrysoftware.ipmi.client.runner;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.sentrysoftware.ipmi.client.IpmiClientConfiguration;
 import org.sentrysoftware.ipmi.core.api.async.ConnectionHandle;
@@ -45,7 +46,7 @@ import org.sentrysoftware.ipmi.core.connection.Connection;
  * 
  * @param <T> Represent the data type managed by the runner 
  */
-public abstract class AbstractIpmiRunner<T> implements AutoCloseable {
+public abstract class AbstractIpmiRunner<T> implements AutoCloseable, Callable<T> {
 
 	private static final int DEFAULT_LOCAL_UDP_PORT = 0;
 
@@ -73,7 +74,6 @@ public abstract class AbstractIpmiRunner<T> implements AutoCloseable {
 
 	protected IpmiClientConfiguration ipmiConfiguration;
 
-	private T result;
 
 	protected IpmiConnector connector;
 	protected ConnectionHandle handle;
@@ -85,13 +85,6 @@ public abstract class AbstractIpmiRunner<T> implements AutoCloseable {
 	}
 
 	/**
-	 * Proceed with the IPMI request
-	 * 
-	 * @throws Exception If the sensor or fru retrieval fails
-	 */
-	public abstract void doRun() throws Exception;
-
-	/**
 	 * Create the {@link IpmiConnector} instance, perform the authentication if required then start the session. <br>
 	 * This method will instantiate the internal fields: <em></em>
 	 * 
@@ -101,7 +94,7 @@ public abstract class AbstractIpmiRunner<T> implements AutoCloseable {
 		// Create the connector, specify port that will be used to communicate
 		// with the remote host. The UDP layer starts listening at this port, so
 		// no 2 connectors can work at the same time on the same port.
-		connector = new IpmiConnector(DEFAULT_LOCAL_UDP_PORT);
+		connector = new IpmiConnector(DEFAULT_LOCAL_UDP_PORT, ipmiConfiguration.getPingPeriod());
 
 		// Should we perform the authentication
 		if (!ipmiConfiguration.isSkipAuth()) {
@@ -116,23 +109,6 @@ public abstract class AbstractIpmiRunner<T> implements AutoCloseable {
 		// otherwise this parameter should be null)
 		connector.openSession(handle, ipmiConfiguration.getUsername(),
 				String.valueOf(ipmiConfiguration.getPassword()), ipmiConfiguration.getBmcKey());
-	}
-
-	/**
-	 * 
-	 * @return The actual result set by the concrete runner
-	 */
-	public T getResult() {
-		return result;
-	}
-
-	/**
-	 * Set the final result
-	 * 
-	 * @param result The concrete runner result
-	 */
-	public void setResult(T result) {
-		this.result = result;
 	}
 
 	/**
@@ -185,10 +161,14 @@ public abstract class AbstractIpmiRunner<T> implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		if (handle != null) {
 			// Close the session
-			connector.closeSession(handle);
+			try {
+				connector.closeSession(handle);
+			} catch (Exception e) {
+				// Ignore
+			}
 		}
 
 		// Close connection manager and release the listener port.

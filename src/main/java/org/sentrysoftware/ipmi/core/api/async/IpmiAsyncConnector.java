@@ -131,7 +131,26 @@ public class IpmiAsyncConnector implements ConnectionListener {
         loadProperties();
     }
 
-    private void loadProperties() {
+	/**
+	 * Starts {@link IpmiAsyncConnector} and initiates the {@link ConnectionManager}
+	 * at the given port and ping period.
+	 * 
+	 * @param port       the port that will be used by {@link IpmiAsyncConnector} to
+	 *                   communicate with the remote hosts.
+	 * @param pingPeriod the period between sending keep-alive messages to the
+	 *                   remote host.
+	 * @throws IOException When ConnectionManager cannot be created due to an IO
+	 *                     error.
+	 */
+	public IpmiAsyncConnector(int port, long pingPeriod) throws IOException {
+		responseListeners = new ArrayList<>();
+		inboundMessageListeners = new ArrayList<>();
+		connectionManager = new ConnectionManager(port, pingPeriod);
+		sessionManager = new SessionManager();
+		loadProperties();
+	}
+
+	private void loadProperties() {
         retries = Integer.parseInt(PropertiesManager.getInstance().getProperty("retries"));
     }
 

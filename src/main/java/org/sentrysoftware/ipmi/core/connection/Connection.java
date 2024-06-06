@@ -178,7 +178,7 @@ public class Connection extends TimerTask implements MachineObserver {
      *             - when properties file was not found
      * @see #disconnect()
      */
-    public void connect(InetAddress address, int port, int pingPeriod)
+    public void connect(InetAddress address, int port, long pingPeriod)
             throws IOException {
         connect(address, port, pingPeriod, false);
     }
@@ -197,15 +197,20 @@ public class Connection extends TimerTask implements MachineObserver {
      * - when properties file was not found
      * @see #disconnect()
      */
-    public void connect(InetAddress address, int port, int pingPeriod, boolean skipCiphers) throws IOException {
+    public void connect(InetAddress address, int port, long pingPeriod, boolean skipCiphers) throws IOException {
         MessageHandler ipmiMessageHandler = new IpmiMessageHandler(this, timeout);
         messageHandlers.put(PayloadType.Ipmi, ipmiMessageHandler);
 
         MessageHandler solMessageHandler = new SolMessageHandler(this, timeout);
         messageHandlers.put(PayloadType.Sol, solMessageHandler);
 
-        timer = new Timer();
-        timer.schedule(this, pingPeriod, pingPeriod);
+		// If the pingPeriod greater than 0, start the timer otherwise don't start it
+		// means that the connection won't be kept alive by sending no-op messages
+		if (pingPeriod > 0) {
+			timer = new Timer();
+			timer.schedule(this, pingPeriod, pingPeriod);
+		}
+
         stateMachine.register(this);
         if (skipCiphers) {
             stateMachine.start(address, port);
@@ -222,7 +227,10 @@ public class Connection extends TimerTask implements MachineObserver {
      * @see #connect(InetAddress, int, int)
      */
     public void disconnect() {
-        timer.cancel();
+		if (timer != null) {
+			timer.cancel();
+		}
+
         stateMachine.stop();
 
         for (MessageHandler messageHandler : messageHandlers.values()) {
@@ -601,28 +609,36 @@ public class Connection extends TimerTask implements MachineObserver {
         }
     }
 
-    /**
-     * {@link TimerTask} runner - periodically sends no-op messages to keep the
-     * session up
-     */
-    @Override
-    public void run() {
-        int result = -1;
-        do {
-            try {
-                if (!(stateMachine.getCurrent() instanceof SessionValid)) {
-                    break;
-                }
-                result = sendMessage(new org.sentrysoftware.ipmi.core.coding.commands.session.GetChannelAuthenticationCapabilities(
-                        IpmiVersion.V20, IpmiVersion.V20,
-                        ((SessionValid) stateMachine.getCurrent())
-                                .getCipherSuite(), PrivilegeLevel.Callback,
-                        TypeConverter.intToByte(0xe)), false);
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        } while (result <= 0);
-    }
+	/**
+	 * {@link TimerTask} runner - periodically sends no-op messages to keep the
+	 * session up
+	 */
+	@Override
+	public void run() {
+		int result = -1;
+		while (
+			!Thread.currentThread().isInterrupted()
+			&& result <= 0
+			&& stateMachine.getCurrent() instanceof SessionValid
+		) {
+			try {
+
+				result = sendMessage(
+					new org.sentrysoftware.ipmi.core.coding.commands.session.GetChannelAuthenticationCapabilities(
+						IpmiVersion.V20, IpmiVersion.V20,
+						((SessionValid) stateMachine.getCurrent()).getCipherSuite(), PrivilegeLevel.Callback,
+						TypeConverter.intToByte(0xe)
+					),
+					false
+				);
+
+				Thread.sleep(1000);
+
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+	}
 
     public InetAddress getRemoteMachineAddress() {
         return stateMachine.getRemoteMachineAddress();

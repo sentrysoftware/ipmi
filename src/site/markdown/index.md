@@ -29,6 +29,8 @@ Invoke the IPMI Client:
 		final boolean noAuth = false;
 		final byte[] bmcKey = null;
 		final long timeout = 120;
+		// Set pingPeriod to 0 to turn off keep-alive messages sent to the remote host.
+		final pingPeriod = 30000;
 
 		// Instantiates a new IPMI client configuration using the credentials above
 		final IpmiClientConfiguration ipmiClientConfiguration = new IpmiClientConfiguration(

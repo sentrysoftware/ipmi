@@ -109,7 +109,20 @@ public class IpmiConnector {
         loadProperties();
     }
 
-    private void loadProperties() {
+    /**
+     * Starts {@link IpmiConnector} and initiates the {@link ConnectionManager} at the given port. Wildcard IP address
+     * will be used.
+     * <br>
+     * @param port       the port that will be used by {@link IpmiAsyncConnector} to communicate with the remote hosts.
+     * @param pingPeriod
+     * @throws IOException
+     */
+	public IpmiConnector(int port, long pingPeriod) throws IOException {
+		asyncConnector = new IpmiAsyncConnector(port, pingPeriod);
+		loadProperties();
+	}
+
+	private void loadProperties() {
         PropertiesManager manager = PropertiesManager.getInstance();
         retries = Integer.parseInt(manager.getProperty("retries"));
         idleTime = Integer.parseInt(manager.getProperty("idleTime"));

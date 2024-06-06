@@ -24,7 +24,7 @@ package org.sentrysoftware.ipmi.client;
 
 /**
  * IPMI configuration including the required credentials that need to be used to establish the
- * communication with the IPMI interface
+ * communication with the IPMI interface.
  *
  */
 public class IpmiClientConfiguration {
@@ -35,6 +35,7 @@ public class IpmiClientConfiguration {
 	private byte[] bmcKey;
 	private boolean skipAuth;
 	private long timeout;
+	private long pingPeriod = -1;
 
 	/**
 	 * Instantiates a new {@link IpmiClientConfiguration} in order to query the IPMI host.
@@ -54,6 +55,24 @@ public class IpmiClientConfiguration {
 		this.bmcKey = bmcKey;
 		this.skipAuth = skipAuth;
 		this.timeout = timeout;
+	}
+
+	/**
+	 * Instantiates a new {@link IpmiClientConfiguration} in order to query the IPMI host.
+	 * 
+	 * @param hostname   IP Address or host name of the remote IPMI host.
+	 * @param username   Name used to establish the connection with the host via the IPMI protocol.
+	 * @param password   Password used to establish the connection with the host via the IPMI protocol.
+	 * @param bmcKey     The key that should be provided if the two-key authentication is enabled, null otherwise.
+	 * @param skipAuth   Whether the client should skip authentication
+	 * @param timeout    Timeout used for each IPMI request.
+	 * @param pingPeriod The period in milliseconds used to send the keep alive messages.<br>
+	 *                   Set pingPeriod to 0 to turn off keep-alive messages sent to the remote host.
+	 */
+	public IpmiClientConfiguration(String hostname, String username, char[] password,
+			byte[] bmcKey, boolean skipAuth, long timeout, long pingPeriod) {
+		this(hostname, username, password, bmcKey, skipAuth, timeout);
+		this.pingPeriod = pingPeriod;
 	}
 
 	public String getHostname() {
@@ -102,6 +121,14 @@ public class IpmiClientConfiguration {
 
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
+	}
+
+	public long getPingPeriod() {
+		return pingPeriod;
+	}
+
+	public void setPingPeriod(long pingPeriod) {
+		this.pingPeriod = pingPeriod;
 	}
 
 }

@@ -49,15 +49,27 @@ public class ConnectionManager {
     /**
      * Frequency of the no-op commands that will be sent to keep up the session
      */
-    private static int pingPeriod = -1;
+    private long pingPeriod = -1;
+
+	/**
+	 * Initiates the connection manager. Wildcard IP address will be used.
+	 *
+	 * @param port       the port at which {@link UdpListener} will work
+	 * @param pingPeriod frequency of the no-op commands that will be sent to keep
+	 *                   up the session
+	 * @throws IOException If UdpMessenger encountered an error
+	 */
+	public ConnectionManager(int port, long pingPeriod) throws IOException {
+		this(port);
+		this.pingPeriod = pingPeriod;
+	}
 
     /**
      * Initiates the connection manager. Wildcard IP address will be used.
      *
      * @param port
      *            - the port at which {@link UdpListener} will work
-     * @throws IOException
-     *             when properties file was not found
+     * @throws IOException If UdpMessenger encountered an error
      */
     public ConnectionManager(int port) throws IOException {
         messenger = new UdpMessenger(port);
@@ -71,8 +83,7 @@ public class ConnectionManager {
      *            - the port at which {@link UdpListener} will work
      * @param address
      *            - the IP interface {@link UdpListener} will bind to
-     * @throws IOException
-     *             when properties file was not found
+     * @throws IOException If UdpMessenger encountered an error
      */
     public ConnectionManager(int port, InetAddress address) throws IOException {
         messenger = new UdpMessenger(port, address);
@@ -94,7 +105,7 @@ public class ConnectionManager {
         connections = new ArrayList<Connection>();
         reservedTags = new ArrayList<Integer>();
         if (pingPeriod == -1) {
-            pingPeriod = Integer.parseInt(PropertiesManager.getInstance().getProperty("pingPeriod"));
+            pingPeriod = Long.parseLong(PropertiesManager.getInstance().getProperty("pingPeriod"));
         }
     }
 
