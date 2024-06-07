@@ -30,6 +30,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.sentrysoftware.ipmi.client.runner.AbstractIpmiRunner;
+
 public class Utils {
 
 	private Utils() {}
@@ -81,7 +83,7 @@ public class Utils {
 	 * @throws ExecutionException
 	 * @throws TimeoutException
 	 */
-	public static <T> T execute(Callable<T> callable, long timeout)
+	public static <T> T execute(final AbstractIpmiRunner<T> callable, long timeout)
 			throws InterruptedException, ExecutionException, TimeoutException {
 
 		final ExecutorService executorService = Executors.newSingleThreadExecutor();

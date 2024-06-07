@@ -24,7 +24,6 @@ package org.sentrysoftware.ipmi.client;
 
 import static org.sentrysoftware.ipmi.client.Utils.execute;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -56,12 +55,9 @@ public class IpmiClient {
 	 */
 	public static GetChassisStatusResponseData getChassisStatus(final IpmiClientConfiguration ipmiConfiguration)
 			throws InterruptedException, ExecutionException, TimeoutException {
-		return execute(() -> {
-			try (GetChassisStatusRunner runner = new GetChassisStatusRunner(ipmiConfiguration)) {
-				runner.doRun();
-				return runner.getResult();
-			}
-		}, ipmiConfiguration.getTimeout() * 1000);
+		try (GetChassisStatusRunner runner = new GetChassisStatusRunner(ipmiConfiguration)){
+			return execute(runner, ipmiConfiguration.getTimeout() * 1000);
+		}
 	}
 
 	/**
@@ -76,13 +72,9 @@ public class IpmiClient {
 	 */
 	public static List<Sensor> getSensors(final IpmiClientConfiguration ipmiConfiguration)
 			throws InterruptedException, ExecutionException, TimeoutException {
-		return execute(() -> {
-			try (GetSensorsRunner runner = new GetSensorsRunner(ipmiConfiguration)) {
-				runner.doRun();
-				List<Sensor> result = runner.getResult();
-				return result != null ? result : new ArrayList<>();
-			}
-		}, ipmiConfiguration.getTimeout() * 1000);
+		try (GetSensorsRunner runner = new GetSensorsRunner(ipmiConfiguration)) {
+			return execute(runner, ipmiConfiguration.getTimeout() * 1000);
+		}
 	}
 
 	/**
@@ -97,13 +89,9 @@ public class IpmiClient {
 	 */
 	public static List<Fru> getFrus(final IpmiClientConfiguration ipmiConfiguration)
 			throws InterruptedException, ExecutionException, TimeoutException {
-		return execute(() -> {
-			try (GetFrusRunner runner = new GetFrusRunner(ipmiConfiguration)) {
-				runner.doRun();
-				List<Fru> result = runner.getResult();
-				return result != null ? result : new ArrayList<>();
-			}
-		}, ipmiConfiguration.getTimeout() * 1000);
+		try (GetFrusRunner runner = new GetFrusRunner(ipmiConfiguration)) {
+			return execute(runner, ipmiConfiguration.getTimeout() * 1000);
+		}
 	}
 
 	/**

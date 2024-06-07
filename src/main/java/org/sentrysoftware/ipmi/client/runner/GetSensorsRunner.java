@@ -57,7 +57,7 @@ public class GetSensorsRunner extends AbstractIpmiRunner<List<Sensor>> {
 	}
 
 	@Override
-	public void doRun() throws Exception {
+	public List<Sensor> call() throws Exception {
 
 		final List<Sensor> result = new ArrayList<>();
 
@@ -119,7 +119,7 @@ public class GetSensorsRunner extends AbstractIpmiRunner<List<Sensor>> {
 
 		}
 
-		super.setResult(result);
+		return result;
 	}
 
 	/**
