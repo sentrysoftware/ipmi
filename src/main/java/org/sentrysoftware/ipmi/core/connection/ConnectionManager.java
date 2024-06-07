@@ -56,7 +56,7 @@ public class ConnectionManager {
 	 *
 	 * @param port       the port at which {@link UdpListener} will work
 	 * @param pingPeriod frequency of the no-op commands that will be sent to keep
-	 *                   up the session
+	 *                   up the session. 0 to disable ping requests.
 	 * @throws IOException If UdpMessenger encountered an error
 	 */
 	public ConnectionManager(int port, long pingPeriod) throws IOException {

@@ -150,9 +150,12 @@ public class IpmiAsyncConnector implements ConnectionListener {
 		loadProperties();
 	}
 
+	/**
+	 * Loads properties from the properties file.
+	 */
 	private void loadProperties() {
-        retries = Integer.parseInt(PropertiesManager.getInstance().getProperty("retries"));
-    }
+		retries = Integer.parseInt(PropertiesManager.getInstance().getProperty("retries"));
+	}
 
     /**
      * Creates connection to the remote host.

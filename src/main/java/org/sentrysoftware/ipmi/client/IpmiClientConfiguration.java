@@ -75,58 +75,138 @@ public class IpmiClientConfiguration {
 		this.pingPeriod = pingPeriod;
 	}
 
+	/**
+	 * Returns the IP Address or host name of the remote IPMI host.
+	 * 
+	 * @return IP Address or host name of the remote IPMI host.
+	 */
 	public String getHostname() {
 		return hostname;
 	}
 
+	/**
+	 * Sets the IP Address or host name of the remote IPMI host.
+	 * 
+	 * @param hostname IP Address or host name of the remote IPMI host.
+	 */
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
 	}
 
+	/**
+	 * Returns the name used to establish the connection with the host via the IPMI
+	 * protocol.
+	 * 
+	 * @return Name used to establish the connection with the host via the IPMI protocol.
+	 */
 	public String getUsername() {
 		return username;
 	}
 
+	/**
+	 * Sets the name used to establish the connection with the host via the IPMI
+	 * protocol.
+	 * 
+	 * @param username Name used to establish the connection with the host via the
+	 *                 IPMI protocol.
+	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+	/**
+	 * Returns the password used to establish the connection with the host via the
+	 * IPMI protocol.
+	 * 
+	 * @return Password used to establish the connection with the host via the IPMI protocol.
+	 */
 	public char[] getPassword() {
 		return password;
 	}
 
+	/**
+	 * Sets the password used to establish the connection with the host via the IPMI
+	 * protocol.
+	 * 
+	 * @param password Password used to establish the connection with the host via the IPMI protocol.
+	 */
 	public void setPassword(char[] password) {
 		this.password = password;
 	}
 
+	/**
+	 * Returns the key that should be provided if the two-key authentication is
+	 * enabled, null otherwise.
+	 * 
+	 * @return The key that should be provided if the two-key authentication is
+	 *         enabled, null otherwise.
+	 */
 	public byte[] getBmcKey() {
 		return bmcKey;
 	}
 
+	/**
+	 * Sets the key that should be provided if the two-key authentication is
+	 * enabled, null otherwise.
+	 * 
+	 * @param bmcKey The key that should be provided if the two-key authentication
+	 *               is enabled, null otherwise.
+	 */
 	public void setBmcKey(byte[] bmcKey) {
 		this.bmcKey = bmcKey;
 	}
 
+	/**
+	 * Returns whether the client should skip authentication.
+	 * 
+	 * @return Whether the client should skip authentication.
+	 */
 	public boolean isSkipAuth() {
 		return skipAuth;
 	}
 
+	/**
+	 * Sets whether the client should skip authentication.
+	 * 
+	 * @param skipAuth Whether the client should skip authentication.
+	 */
 	public void setSkipAuth(boolean skipAuth) {
 		this.skipAuth = skipAuth;
 	}
 
+	/**
+	 * Returns the timeout used for each IPMI request.
+	 * 
+	 * @return The timeout used for each IPMI request.
+	 */
 	public long getTimeout() {
 		return timeout;
 	}
 
+	/**
+	 * Sets the timeout used for each IPMI request.
+	 * 
+	 * @param timeout The timeout used for each IPMI request.
+	 */
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
 	}
 
+	/**
+	 * Returns the period in milliseconds used to send the keep alive messages.
+	 * 
+	 * @return The period in milliseconds used to send the keep alive messages.
+	 */
 	public long getPingPeriod() {
 		return pingPeriod;
 	}
 
+	/**
+	 * Sets the period in milliseconds used to send the keep alive messages.<br>
+	 * Set pingPeriod to 0 to turn off keep-alive messages sent to the remote host.
+	 * 
+	 * @param pingPeriod The period in milliseconds used to send the keep alive messages.
+	 */
 	public void setPingPeriod(long pingPeriod) {
 		this.pingPeriod = pingPeriod;
 	}

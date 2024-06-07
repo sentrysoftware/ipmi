@@ -109,24 +109,30 @@ public class IpmiConnector {
         loadProperties();
     }
 
-    /**
-     * Starts {@link IpmiConnector} and initiates the {@link ConnectionManager} at the given port. Wildcard IP address
-     * will be used.
-     * <br>
-     * @param port       the port that will be used by {@link IpmiAsyncConnector} to communicate with the remote hosts.
-     * @param pingPeriod
-     * @throws IOException
-     */
+	/**
+	 * Starts {@link IpmiConnector} and initiates the {@link ConnectionManager} at
+	 * the given port. Wildcard IP address will be used.
+	 * 
+	 * @param port       the port that will be used by {@link IpmiAsyncConnector} to
+	 *                   communicate with the remote hosts.
+	 * @param pingPeriod the period in milliseconds used to send the keep alive
+	 *                   messages.<br>
+	 *                   0 If keep-alive messages should be disabled.
+	 * @throws IOException When IpmiAsyncConnector cannot be created.
+	 */
 	public IpmiConnector(int port, long pingPeriod) throws IOException {
 		asyncConnector = new IpmiAsyncConnector(port, pingPeriod);
 		loadProperties();
 	}
 
+	/**
+	 * Loads properties from the properties file.
+	 */
 	private void loadProperties() {
-        PropertiesManager manager = PropertiesManager.getInstance();
-        retries = Integer.parseInt(manager.getProperty("retries"));
-        idleTime = Integer.parseInt(manager.getProperty("idleTime"));
-    }
+		PropertiesManager manager = PropertiesManager.getInstance();
+		retries = Integer.parseInt(manager.getProperty("retries"));
+		idleTime = Integer.parseInt(manager.getProperty("idleTime"));
+	}
 
     /**
      * Creates connection to the remote host on default IPMI port.
