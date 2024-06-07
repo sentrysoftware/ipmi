@@ -111,6 +111,19 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<!-- license -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<licenseName>lgpl_v3</licenseName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<reporting>
 		<plugins>
 
