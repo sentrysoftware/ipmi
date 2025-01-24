@@ -29,40 +29,39 @@ import java.util.Arrays;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * RAKP-HMAC-SHA1 authentication algorithm.
- */
-public class AuthenticationRakpHmacSha1 extends AuthenticationAlgorithm {
 
-    private static final String ALGORITHM_NAME = "HmacSHA1";
+/**
+ * RAKP-HMAC-MD5 authentication algorithm.
+ */
+public class AuthenticationRakpHmacMd5 extends AuthenticationAlgorithm {
+
+    private static final String ALGORITHM_NAME = "HmacMD5";
 
     private Mac mac;
 
-    /**
-     * Initiates RAKP-HMAC-SHA1 authentication algorithm.
-     * @throws NoSuchAlgorithmException
-     *             - when initiation of the algorithm fails
-     */
-    public AuthenticationRakpHmacSha1() throws NoSuchAlgorithmException {
+	/**
+	 * Initiates RAKP-HMAC-MD5 authentication algorithm.
+	 *
+	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
+	 */
+    public AuthenticationRakpHmacMd5() throws NoSuchAlgorithmException {
         mac = Mac.getInstance(ALGORITHM_NAME);
     }
 
     @Override
     public byte getCode() {
-        return SecurityConstants.AA_RAKP_HMAC_SHA1;
+        return SecurityConstants.AA_RAKP_HMAC_MD5;
     }
 
     @Override
-    public boolean checkKeyExchangeAuthenticationCode(byte[] data, byte[] key,
-            String password) throws NoSuchAlgorithmException,
-            InvalidKeyException {
+    public boolean checkKeyExchangeAuthenticationCode(byte[] data, byte[] key, String password)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         byte[] check = getKeyExchangeAuthenticationCode(data, password);
         return Arrays.equals(check, key);
     }
 
     @Override
-    public byte[] getKeyExchangeAuthenticationCode(byte[] data,
-        String password)
+    public byte[] getKeyExchangeAuthenticationCode(byte[] data, String password)
             throws NoSuchAlgorithmException, InvalidKeyException {
 
         byte[] key = password.getBytes();
@@ -74,7 +73,8 @@ public class AuthenticationRakpHmacSha1 extends AuthenticationAlgorithm {
     }
 
     @Override
-    public boolean doIntegrityCheck(byte[] data, byte[] reference, byte[] sik) throws InvalidKeyException, NoSuchAlgorithmException {
+    public boolean doIntegrityCheck(byte[] data, byte[] reference, byte[] sik)
+            throws InvalidKeyException, NoSuchAlgorithmException {
 
         SecretKeySpec sKey = new SecretKeySpec(sik, ALGORITHM_NAME);
         mac.init(sKey);
@@ -88,7 +88,7 @@ public class AuthenticationRakpHmacSha1 extends AuthenticationAlgorithm {
 
     @Override
     public int getKeyLength() {
-        return 20;
+        return 16;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class AuthenticationRakpHmacSha1 extends AuthenticationAlgorithm {
     }
 
     @Override
-    public String getAlgorithmName() {
+	public String getAlgorithmName() {
 		return ALGORITHM_NAME;
 	}
 

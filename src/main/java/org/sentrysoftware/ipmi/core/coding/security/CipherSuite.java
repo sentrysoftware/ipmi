@@ -78,7 +78,7 @@ public class CipherSuite {
      */
     public void initializeAlgorithms(byte[] sik) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
         getIntegrityAlgorithm().initialize(sik);
-        getConfidentialityAlgorithm().initialize(sik);
+        getConfidentialityAlgorithm().initialize(sik, getAuthenticationAlgorithm());
     }
 
     /**
@@ -99,25 +99,13 @@ public class CipherSuite {
             }
             return aa;
         case SecurityConstants.AA_RAKP_HMAC_SHA1:
-            if (aa == null) {
-                try {
-                    aa = new AuthenticationRakpHmacSha1();
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IllegalArgumentException(
-                            "Initiation of the algorithm failed", e);
-                }
-            }
-            return aa;
+            return instantiateRakpHmacSha1Algorithm();
         case SecurityConstants.AA_RAKP_HMAC_MD5:
-            // TODO: RAKP HMAC MD5
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
+            return instantiateRakpHmacMd5Algorithm();
         case SecurityConstants.AA_RAKP_HMAC_SHA256:
-            // TODO: RAKP HMAC Sha256
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
+            return instantiateRakpHmacSha256Algorithm();
         default:
-            throw new IllegalArgumentException(
-                    "Invalid authentication algorithm.");
-
+            throw new IllegalArgumentException("Invalid authentication algorithm.");
         }
     }
 
@@ -127,7 +115,7 @@ public class CipherSuite {
      * @throws IllegalArgumentException
      *             when integrity algorithm code is incorrect.
      */
-    public IntegrityAlgorithm getIntegrityAlgorithm() {
+    public IntegrityAlgorithm getIntegrityAlgorithm(){
         if (ia != null && ia.getCode() != integrityAlgorithm) {
             throw new IllegalArgumentException(
                     "Invalid integrity algorithm code");
@@ -139,31 +127,20 @@ public class CipherSuite {
             }
             return ia;
         case SecurityConstants.IA_HMAC_SHA1_96:
-            if (ia == null) {
-                try {
-                    ia = new IntegrityHmacSha1_96();
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IllegalArgumentException(
-                            "Initiation of the algorithm failed", e);
-                }
-            }
-            return ia;
-        case SecurityConstants.IA_HMAC_SHA256_128:
-            // TODO: HMAC SHA256-128
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
+            return instantiateIntegrityHmacSha196Algorithm();
         case SecurityConstants.IA_MD5_128:
             // TODO: MD5-128
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
         case SecurityConstants.IA_HMAC_MD5_128:
-            // TODO: HMAC MD5-128
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
+            return instantiateIntegrityHmacMd5128Algorithm();
+        case SecurityConstants.IA_HMAC_SHA256_128:
+            return instantiateIntegrityHmacSha256128Algorithm();
         default:
             throw new IllegalArgumentException("Invalid integrity algorithm.");
 
         }
     }
 
-    /**
+	/**
      * Returns instance of ConfidentialityAlgorithm class.
      *
      * @throws IllegalArgumentException
@@ -252,4 +229,108 @@ public class CipherSuite {
     public static CipherSuite getEmpty() {
         return new CipherSuite((byte) 0, (byte) 0, (byte) 0, (byte) 0);
     }
+
+    /**
+     * Creates an instance of AuthenticationRakpHmacSha1.
+     *
+     * @return An instance of {@code AuthenticationRakpHmacSha1}.
+     * @throws IllegalArgumentException if algorithm initialization fails.
+     */
+    private AuthenticationAlgorithm instantiateRakpHmacSha1Algorithm() {
+        if (aa == null) {
+            try {
+                aa = new AuthenticationRakpHmacSha1();
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException("Initiation of the algorithm failed", e);
+            }
+        }
+        return aa;
+    }
+
+    /**
+     * Creates an instance of AuthenticationRakpHmacMd5.
+     *
+     * @return An instance of {@code AuthenticationRakpHmacMd5}.
+     * @throws IllegalArgumentException if algorithm initialization fails.
+     */
+    private AuthenticationAlgorithm instantiateRakpHmacMd5Algorithm() {
+        if (aa == null) {
+            try {
+                aa = new AuthenticationRakpHmacMd5();
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException("Initiation of the algorithm failed", e);
+            }
+        }
+        return aa;
+    }
+
+    /**
+     * Creates an instance of AuthenticationRakpHmacSha256.
+     *
+     * @return An instance of {@code AuthenticationRakpHmacSha256}.
+     * @throws IllegalArgumentException if algorithm initialization fails.
+     */
+    private AuthenticationAlgorithm instantiateRakpHmacSha256Algorithm() {
+        if (aa == null) {
+            try {
+                aa = new AuthenticationRakpHmacSha256();
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException("Initiation of the algorithm failed", e);
+            }
+        }
+        return aa;
+    }
+
+    /**
+     * Creates an instance of IntegrityHmacSha1_96.
+     *
+     * @return An instance of {@code IntegrityHmacSha1_96}.
+     * @throws IllegalArgumentException if the algorithm initiation fails.
+     */
+	private IntegrityAlgorithm instantiateIntegrityHmacSha196Algorithm() {
+		if (ia == null) {
+			try {
+				ia = new IntegrityHmacSha1_96();
+			} catch (NoSuchAlgorithmException e) {
+				throw new IllegalArgumentException("Initiation of the algorithm failed", e);
+			}
+		}
+		return ia;
+	}
+
+	/**
+	 * Creates an instance of IntegrityHmacMd5_128.
+	 *
+     * @return An instance of {@code IntegrityHmacMd5_128}.
+     * @throws IllegalArgumentException if the algorithm initiation fails.
+     */
+	private IntegrityAlgorithm instantiateIntegrityHmacMd5128Algorithm() {
+        if (ia == null) {
+            try {
+                ia = new IntegrityHmacMd5_128();
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException(
+                        "Initiation of the algorithm failed", e);
+            }
+        }
+		return ia;
+	}
+
+	/**
+	 * Creates an instance of IntegrityHmacSha256_128.
+	 *
+     * @return An instance of {@code IntegrityHmacSha256_128}.
+     * @throws IllegalArgumentException if the algorithm initiation fails.
+     */
+	private IntegrityAlgorithm instantiateIntegrityHmacSha256128Algorithm() {
+		if (ia == null) {
+            try {
+                ia = new IntegrityHmacSha256_128();
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException(
+                        "Initiation of the algorithm failed", e);
+            }
+        }
+		return ia;
+	}
 }

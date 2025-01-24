@@ -70,4 +70,9 @@ public class AuthenticationRakpNone extends AuthenticationAlgorithm {
         return 0;
     }
 
+	@Override
+	public String getAlgorithmName() {
+		return "";
+	}
+
 }

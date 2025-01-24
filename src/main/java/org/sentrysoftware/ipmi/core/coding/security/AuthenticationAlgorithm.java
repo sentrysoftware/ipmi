@@ -104,4 +104,9 @@ public abstract class AuthenticationAlgorithm {
      */
     public abstract boolean doIntegrityCheck(byte[] data, byte[] reference,
             byte[] sik) throws InvalidKeyException, NoSuchAlgorithmException;
+
+    /**
+     * @return the name of the algorithm as a {@code String}.
+     */
+    public abstract String getAlgorithmName();
 }

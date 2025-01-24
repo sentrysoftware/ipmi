@@ -39,6 +39,10 @@ public abstract class IntegrityAlgorithm {
 
     }
 
+    protected static final byte[] CONST1 = new byte[] {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1
+    };
+
     /**
      * Initializes Integrity Algorithm
      *

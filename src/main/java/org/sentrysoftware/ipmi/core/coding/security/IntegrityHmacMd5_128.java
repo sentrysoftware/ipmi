@@ -1,10 +1,5 @@
 package org.sentrysoftware.ipmi.core.coding.security;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 /*-
  * ╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲
  * IPMI Java Client
@@ -27,22 +22,28 @@ import javax.crypto.spec.SecretKeySpec;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-/**
- * HMAC-SHA1-96 integrity algorithm.
- */
-public class IntegrityHmacSha1_96 extends IntegrityAlgorithm {
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
-    public static final String ALGORITHM_NAME = "HmacSHA1";
+/**
+ * HMAC-MD5-128 integrity algorithm.
+ */
+public class IntegrityHmacMd5_128 extends IntegrityAlgorithm {
+
+    public static final String ALGORITHM_NAME = "HmacMD5";
     private Mac mac;
 
     /**
-     * Initiates HMAC-SHA1-96 integrity algorithm.
+     * Initiates HMAC-MD5-128 integrity algorithm.
      *
      * @throws NoSuchAlgorithmException
      *             - when initiation of the algorithm fails
      */
-    public IntegrityHmacSha1_96() throws NoSuchAlgorithmException {
+    public IntegrityHmacMd5_128() throws NoSuchAlgorithmException {
         mac = Mac.getInstance(ALGORITHM_NAME);
+
     }
 
     @Override
@@ -60,7 +61,7 @@ public class IntegrityHmacSha1_96 extends IntegrityAlgorithm {
 
     @Override
     public byte getCode() {
-        return SecurityConstants.IA_HMAC_SHA1_96;
+        return SecurityConstants.IA_HMAC_MD5_128;
     }
 
     @Override
@@ -69,18 +70,17 @@ public class IntegrityHmacSha1_96 extends IntegrityAlgorithm {
             throw new NullPointerException("Algorithm not initialized.");
         }
 
-        byte[] result = new byte[12];
+        byte[] result = new byte[16];
         byte[] updatedBase;
 
         if(base[base.length - 2] == 0 /*there are no integrity pad bytes*/) {
-            updatedBase = injectIntegrityPad(base,12);
+            updatedBase = injectIntegrityPad(base,16);
         } else {
             updatedBase = base;
         }
 
-        System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, 12);
+        System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, 16);
 
         return result;
     }
-
 }

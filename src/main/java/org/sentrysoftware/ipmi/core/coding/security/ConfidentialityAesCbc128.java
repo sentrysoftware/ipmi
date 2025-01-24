@@ -51,13 +51,13 @@ public class ConfidentialityAesCbc128 extends ConfidentialityAlgorithm {
     }
 
     @Override
-    public void initialize(byte[] sik) throws InvalidKeyException,
+    public void initialize(byte[] sik, AuthenticationAlgorithm authenticationAlgorithm) throws InvalidKeyException,
             NoSuchAlgorithmException, NoSuchPaddingException {
-        super.initialize(sik);
+        super.initialize(sik, authenticationAlgorithm);
 
-        SecretKeySpec k2 = new SecretKeySpec(sik, "HmacSHA1");
+        SecretKeySpec k2 = new SecretKeySpec(sik, authenticationAlgorithm.getAlgorithmName());
 
-        Mac mac = Mac.getInstance("HmacSHA1");
+        Mac mac = Mac.getInstance(authenticationAlgorithm.getAlgorithmName());
         mac.init(k2);
 
         byte[] ckey = mac.doFinal(CONST2);
