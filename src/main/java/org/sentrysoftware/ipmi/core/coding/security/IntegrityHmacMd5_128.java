@@ -53,8 +53,7 @@ public class IntegrityHmacMd5_128 extends IntegrityAlgorithm {
         SecretKeySpec k1 = new SecretKeySpec(sik, ALGORITHM_NAME);
 
         mac.init(k1);
-        byte[] derivedKey = mac.doFinal(CONST1);
-        k1 = new SecretKeySpec(derivedKey, ALGORITHM_NAME);
+        k1 = new SecretKeySpec(mac.doFinal(CONST1), ALGORITHM_NAME);
 
         mac.init(k1);
     }
