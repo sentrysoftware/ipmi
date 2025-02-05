@@ -39,11 +39,11 @@ public class AuthenticationRakpHmacMd5 extends AuthenticationAlgorithm {
 
     private Mac mac;
 
-	/**
-	 * Initiates RAKP-HMAC-MD5 authentication algorithm.
-	 *
-	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
-	 */
+    /**
+     * Initiates RAKP-HMAC-MD5 authentication algorithm.
+     *
+     * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
+     */
     public AuthenticationRakpHmacMd5() throws NoSuchAlgorithmException {
         mac = Mac.getInstance(ALGORITHM_NAME);
     }
