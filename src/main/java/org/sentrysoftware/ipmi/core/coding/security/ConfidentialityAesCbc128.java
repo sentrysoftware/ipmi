@@ -24,6 +24,7 @@ package org.sentrysoftware.ipmi.core.coding.security;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -38,8 +39,10 @@ import org.sentrysoftware.ipmi.core.common.TypeConverter;
  */
 public class ConfidentialityAesCbc128 extends ConfidentialityAlgorithm {
 
-    private static final byte[] CONST2 = new byte[] { 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+	protected static final byte[] CONST2 = new byte[20];
+	static {
+		Arrays.fill(CONST2, (byte) 2);
+	}
 
     private Cipher cipher;
 

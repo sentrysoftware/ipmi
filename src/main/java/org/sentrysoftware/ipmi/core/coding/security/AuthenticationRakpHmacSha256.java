@@ -22,12 +22,7 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * RAKP-HMAC-SHA256 authentication algorithm.
@@ -36,54 +31,18 @@ public class AuthenticationRakpHmacSha256 extends AuthenticationAlgorithm {
 
 	private static final String ALGORITHM_NAME = "HmacSHA256";
 
-	private Mac mac;
-
 	/**
 	 * Initiates RAKP-HMAC-SHA256 authentication algorithm.
 	 *
-	 * @throws NoSuchAlgorithmException
-	 * 			   - when initiation of the algorithm fails
+	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
 	 */
 	public AuthenticationRakpHmacSha256() throws NoSuchAlgorithmException {
-		mac = Mac.getInstance(ALGORITHM_NAME);
+		super();
 	}
 
 	@Override
 	public byte getCode() {
 		return SecurityConstants.AA_RAKP_HMAC_SHA256;
-	}
-
-	@Override
-	public boolean checkKeyExchangeAuthenticationCode(byte[] data, byte[] key, String password)
-			throws NoSuchAlgorithmException, InvalidKeyException {
-		byte[] check = getKeyExchangeAuthenticationCode(data, password);
-		return Arrays.equals(check, key);
-	}
-
-	@Override
-	public byte[] getKeyExchangeAuthenticationCode(byte[] data, String password)
-			throws NoSuchAlgorithmException, InvalidKeyException {
-
-		byte[] key = password.getBytes();
-
-		SecretKeySpec sKey = new SecretKeySpec(key, ALGORITHM_NAME);
-		mac.init(sKey);
-
-		return mac.doFinal(data);
-	}
-
-	@Override
-	public boolean doIntegrityCheck(byte[] data, byte[] reference, byte[] sik)
-			throws InvalidKeyException, NoSuchAlgorithmException {
-
-		SecretKeySpec sKey = new SecretKeySpec(sik, ALGORITHM_NAME);
-		mac.init(sKey);
-
-		byte[] result = new byte[getIntegrityCheckBaseLength()];
-
-		System.arraycopy(mac.doFinal(data), 0, result, 0, getIntegrityCheckBaseLength());
-
-		return Arrays.equals(result, reference);
 	}
 
 	@Override

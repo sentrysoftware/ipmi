@@ -1,5 +1,7 @@
 package org.sentrysoftware.ipmi.core.coding.security;
 
+import java.security.NoSuchAlgorithmException;
+
 /*-
  * ╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲
  * IPMI Java Client
@@ -27,52 +29,60 @@ package org.sentrysoftware.ipmi.core.coding.security;
  */
 public class AuthenticationRakpNone extends AuthenticationAlgorithm {
 
-    @Override
-    public byte getCode() {
-        return SecurityConstants.AA_RAKP_NONE;
-    }
-
-    /**
-     * Checks value of the Key Exchange Authentication Code in RAKP messages
-     * using the RAKP-None algorithm.
+	/**
+     * Constructs an instance of the RAKP-None authentication algorithm.
+     * 
+     * Since this algorithm does not require cryptographic operations, it uses 
+     * {@code super(true)} to skip MAC initialization in the parent class.
+     * 
      */
-    @Override
-    public boolean checkKeyExchangeAuthenticationCode(byte[] data, byte[] key, String password) {
-        return true;
-    }
+	public AuthenticationRakpNone() {
+		super(true);
+	}
 
-    /**
-     * Calculates value of the Key Exchange Authentication Code in RAKP messages
-     * using the RAKP-None algorithm.
-     */
-    @Override
-    public byte[] getKeyExchangeAuthenticationCode(byte[] data,
-            String password) {
-        return new byte[0];
-    }
+	@Override
+	public byte getCode() {
+		return SecurityConstants.AA_RAKP_NONE;
+	}
 
-    /**
-     * Performs Integrity Check in RAKP 4 message
-     * using the RAKP-None algorithm.
-     */
-    @Override
-    public boolean doIntegrityCheck(byte[] data, byte[] reference, byte[] sik) {
-        return true;
-    }
+	/**
+	 * Checks value of the Key Exchange Authentication Code in RAKP messages using
+	 * the RAKP-None algorithm.
+	 */
+	@Override
+	public boolean checkKeyExchangeAuthenticationCode(byte[] data, byte[] key, String password) {
+		return true;
+	}
 
-    @Override
-    public int getKeyLength() {
-        return 0;
-    }
+	/**
+	 * Calculates value of the Key Exchange Authentication Code in RAKP messages
+	 * using the RAKP-None algorithm.
+	 */
+	@Override
+	public byte[] getKeyExchangeAuthenticationCode(byte[] data, String password) {
+		return new byte[0];
+	}
 
-    @Override
-    public int getIntegrityCheckBaseLength() {
-        return 0;
-    }
+	/**
+	 * Performs Integrity Check in RAKP 4 message using the RAKP-None algorithm.
+	 */
+	@Override
+	public boolean doIntegrityCheck(byte[] data, byte[] reference, byte[] sik) {
+		return true;
+	}
+
+	@Override
+	public int getKeyLength() {
+		return 0;
+	}
+
+	@Override
+	public int getIntegrityCheckBaseLength() {
+		return 0;
+	}
 
 	@Override
 	public String getAlgorithmName() {
 		return "";
 	}
-
 }

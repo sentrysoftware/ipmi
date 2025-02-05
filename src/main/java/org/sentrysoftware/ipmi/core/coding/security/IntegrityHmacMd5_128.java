@@ -22,9 +22,6 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -32,54 +29,29 @@ import java.security.NoSuchAlgorithmException;
  */
 public class IntegrityHmacMd5_128 extends IntegrityAlgorithm {
 
-    public static final String ALGORITHM_NAME = "HmacMD5";
-    private Mac mac;
+	public static final String ALGORITHM_NAME = "HmacMD5";
 
-    /**
-     * Initiates HMAC-MD5-128 integrity algorithm.
-     *
-     * @throws NoSuchAlgorithmException
-     *             - when initiation of the algorithm fails
-     */
-    public IntegrityHmacMd5_128() throws NoSuchAlgorithmException {
-        mac = Mac.getInstance(ALGORITHM_NAME);
+	/**
+	 * Initiates HMAC-MD5-128 integrity algorithm.
+	 *
+	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
+	 */
+	public IntegrityHmacMd5_128() throws NoSuchAlgorithmException {
+		super();
+	}
 
-    }
+	@Override
+	public byte getCode() {
+		return SecurityConstants.IA_HMAC_MD5_128;
+	}
 
-    @Override
-    public void initialize(byte[] sik) throws InvalidKeyException {
-        super.initialize(sik);
+	@Override
+	public String getAlgorithmName() {
+		return ALGORITHM_NAME;
+	}
 
-        SecretKeySpec k1 = new SecretKeySpec(sik, ALGORITHM_NAME);
-
-        mac.init(k1);
-        k1 = new SecretKeySpec(mac.doFinal(CONST1), ALGORITHM_NAME);
-
-        mac.init(k1);
-    }
-
-    @Override
-    public byte getCode() {
-        return SecurityConstants.IA_HMAC_MD5_128;
-    }
-
-    @Override
-    public byte[] generateAuthCode(final byte[] base) {
-        if (sik == null) {
-            throw new NullPointerException("Algorithm not initialized.");
-        }
-
-        byte[] result = new byte[16];
-        byte[] updatedBase;
-
-        if(base[base.length - 2] == 0 /*there are no integrity pad bytes*/) {
-            updatedBase = injectIntegrityPad(base,16);
-        } else {
-            updatedBase = base;
-        }
-
-        System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, 16);
-
-        return result;
-    }
+	@Override
+	public int getAuthCodeLength() {
+		return 16;
+	}
 }

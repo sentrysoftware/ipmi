@@ -26,6 +26,11 @@ import org.sentrysoftware.ipmi.core.coding.commands.session.Rakp1;
 import org.sentrysoftware.ipmi.core.common.TypeConverter;
 
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Interface for Integrity Algorithms. All classes extending this one must
@@ -33,79 +38,129 @@ import java.security.InvalidKeyException;
  */
 public abstract class IntegrityAlgorithm {
 
-    protected byte[] sik;
+	protected static final byte[] CONST1 = new byte[20];
+	static {
+		Arrays.fill(CONST1, (byte) 1);
+	}
 
-    public IntegrityAlgorithm() {
+	protected byte[] sik;
+	private final Mac mac;
 
-    }
+	/**
+	 * Constructs an integrity algorithm
+	 *
+	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
+	 */
+	protected IntegrityAlgorithm() throws NoSuchAlgorithmException {
+		mac = Mac.getInstance(getAlgorithmName());
+	}
 
-    protected static final byte[] CONST1 = new byte[] {
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1
-    };
+	/**
+	 * Constructor that allows skipping HMAC initialization.
+	 *
+	 * @param noMacInit If {@code true}, HMAC will not be initialized.
+	 */
+	protected IntegrityAlgorithm(boolean noMacInit) {
+		this.mac = null;
+	}
 
-    /**
-     * Initializes Integrity Algorithm
-     *
-     * @param sik
-     *            - Session Integrity Key calculated during the opening of the
-     *            session or user password if 'one-key' logins are enabled.
-     */
-    public void initialize(byte[] sik) throws InvalidKeyException {
-        this.sik = sik;
-    }
+	/**
+	 * Initializes Integrity Algorithm
+	 *
+	 * @param sik - Session Integrity Key calculated during the opening of the
+	 *            session or user password if 'one-key' logins are enabled.
+	 */
+	public void initialize(byte[] sik) throws InvalidKeyException {
+		this.sik = sik;
 
-    /**
-     * Returns the algorithm's ID.
-     */
-    public abstract byte getCode();
+		SecretKeySpec k1 = new SecretKeySpec(sik, getAlgorithmName());
 
-    /**
-     * Creates AuthCode field for message.
-     *
-     * @param base
-     *            - data starting with the AuthType/Format field up to and
-     *            including the field that immediately precedes the AuthCode
-     *            field
-     * @return AuthCode field. Might be null if empty AuthCOde field is
-     *         generated.
-     *
-     * @see Rakp1#calculateSik(org.sentrysoftware.ipmi.core.coding.commands.session.Rakp1ResponseData)
-     */
-    public abstract byte[] generateAuthCode(byte[] base);
+		mac.init(k1);
+		k1 = new SecretKeySpec(mac.doFinal(CONST1), getAlgorithmName());
 
-    /**
-     * Modifies the algorithm base since with null Auth Code during encoding
-     * Integrity Pad isn't calculated.
-     *
-     * @param base
-     *            - integrity algorithm base without Integrity Pad.
-     * @param authCodeLength
-     *            - expected length of the Auth Code field.
-     * @return - integrity algorithm base with Integrity Pad and updated Pad
-     *         Length field.
-     */
-    protected byte[] injectIntegrityPad(byte[] base, int authCodeLength) {
-        int pad = 0;
-        if ((base.length + authCodeLength) % 4 != 0) {
-            pad = 4 - (base.length + authCodeLength) % 4;
-        }
+		mac.init(k1);
+	}
 
-        if (pad != 0) {
-            byte[] newBase = new byte[base.length + pad];
+	/**
+	 * Returns the algorithm's ID.
+	 */
+	public abstract byte getCode();
 
-            System.arraycopy(base, 0, newBase, 0, base.length - 2);
+	/**
+	 * Creates AuthCode field for message.
+	 *
+	 * @param base - data starting with the AuthType/Format field up to and
+	 *             including the field that immediately precedes the AuthCode field
+	 * @return AuthCode field. Might be null if empty AuthCOde field is generated.
+	 *
+	 * @see Rakp1#calculateSik(org.sentrysoftware.ipmi.core.coding.commands.session.Rakp1ResponseData)
+	 */
+	public byte[] generateAuthCode(final byte[] base) {
 
-            for (int i = base.length - 2; i < base.length - 2 + pad; ++i) {
-                newBase[i] = TypeConverter.intToByte(0xff);
-            }
+		if (sik == null) {
+			throw new NullPointerException("Algorithm not initialized.");
+		}
 
-            newBase[newBase.length - 2] = TypeConverter.intToByte(pad);
+		byte[] result = new byte[getAuthCodeLength()];
+		byte[] updatedBase;
 
-            newBase[newBase.length - 1] = base[base.length - 1];
+		if (base[base.length - 2] == 0) { // pas de padding
+			updatedBase = injectIntegrityPad(base, getAuthCodeLength());
+		} else {
+			updatedBase = base;
+		}
 
-            return newBase;
-        } else {
-            return base;
-        }
-    }
+		System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, getAuthCodeLength());
+
+		return result;
+	}
+
+	/**
+	 * Modifies the algorithm base since with null Auth Code during encoding
+	 * Integrity Pad isn't calculated.
+	 *
+	 * @param base           - integrity algorithm base without Integrity Pad.
+	 * @param authCodeLength - expected length of the Auth Code field.
+	 * @return - integrity algorithm base with Integrity Pad and updated Pad Length
+	 *         field.
+	 */
+	protected byte[] injectIntegrityPad(byte[] base, int authCodeLength) {
+		int pad = 0;
+		if ((base.length + authCodeLength) % 4 != 0) {
+			pad = 4 - (base.length + authCodeLength) % 4;
+		}
+
+		if (pad != 0) {
+			byte[] newBase = new byte[base.length + pad];
+
+			System.arraycopy(base, 0, newBase, 0, base.length - 2);
+
+			for (int i = base.length - 2; i < base.length - 2 + pad; ++i) {
+				newBase[i] = TypeConverter.intToByte(0xff);
+			}
+
+			newBase[newBase.length - 2] = TypeConverter.intToByte(pad);
+
+			newBase[newBase.length - 1] = base[base.length - 1];
+
+			return newBase;
+		} else {
+			return base;
+		}
+	}
+
+	/**
+	 * Returns the name of the algorithm.
+	 *
+	 * @return The algorithm name as a {@code String}.
+	 */
+	public abstract String getAlgorithmName();
+
+	/**
+	 * Returns the length of the authentication code
+	 *
+	 * @return The length of the authentication code in bytes.
+	 */
+	public abstract int getAuthCodeLength();
+
 }

@@ -22,10 +22,7 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * HMAC-SHA256-128 integrity algorithm.
@@ -33,7 +30,6 @@ import javax.crypto.spec.SecretKeySpec;
 public class IntegrityHmacSha256_128 extends IntegrityAlgorithm {
 
 	private static final String ALGORITHM_NAME = "HmacSHA256";
-	private Mac mac;
 
 	/**
 	 * Initiates HMAC-SHA1-96 integrity algorithm.
@@ -41,19 +37,7 @@ public class IntegrityHmacSha256_128 extends IntegrityAlgorithm {
 	 * @throws NoSuchAlgorithmException when initiation of the algorithm fails
 	 */
 	public IntegrityHmacSha256_128() throws NoSuchAlgorithmException {
-		mac = Mac.getInstance(ALGORITHM_NAME);
-	}
-
-	@Override
-	public void initialize(byte[] sik) throws InvalidKeyException {
-		super.initialize(sik);
-
-		SecretKeySpec k1 = new SecretKeySpec(sik, ALGORITHM_NAME);
-
-		mac.init(k1);
-		k1 = new SecretKeySpec(mac.doFinal(CONST1), ALGORITHM_NAME);
-
-		mac.init(k1);
+		super();
 	}
 
 	@Override
@@ -62,24 +46,13 @@ public class IntegrityHmacSha256_128 extends IntegrityAlgorithm {
 	}
 
 	@Override
-	public byte[] generateAuthCode(byte[] base) {
+	public String getAlgorithmName() {
+		return ALGORITHM_NAME;
+	}
 
-		if (sik == null) {
-			throw new NullPointerException("Algorithm not initialized.");
-		}
-
-		byte[] result = new byte[16];
-		byte[] updatedBase;
-
-		if (base[base.length - 2] == 0 /* there are no integrity pad bytes */) {
-			updatedBase = injectIntegrityPad(base, 16);
-		} else {
-			updatedBase = base;
-		}
-
-		System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, 16);
-
-		return result;
+	@Override
+	public int getAuthCodeLength() {
+		return 16;
 	}
 
 }

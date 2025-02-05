@@ -22,82 +22,41 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * RAKP-HMAC-SHA1 authentication algorithm.
  */
 public class AuthenticationRakpHmacSha1 extends AuthenticationAlgorithm {
 
-    private static final String ALGORITHM_NAME = "HmacSHA1";
+	/**
+	 * Initiates RAKP-HMAC-SHA1 authentication algorithm.
+	 *
+	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
+	 */
+	public AuthenticationRakpHmacSha1() throws NoSuchAlgorithmException {
+		super();
+	}
 
-    private Mac mac;
+	private static final String ALGORITHM_NAME = "HmacSHA1";
 
-    /**
-     * Initiates RAKP-HMAC-SHA1 authentication algorithm.
-     * @throws NoSuchAlgorithmException
-     *             - when initiation of the algorithm fails
-     */
-    public AuthenticationRakpHmacSha1() throws NoSuchAlgorithmException {
-        mac = Mac.getInstance(ALGORITHM_NAME);
-    }
+	@Override
+	public byte getCode() {
+		return SecurityConstants.AA_RAKP_HMAC_SHA1;
+	}
 
-    @Override
-    public byte getCode() {
-        return SecurityConstants.AA_RAKP_HMAC_SHA1;
-    }
+	@Override
+	public int getKeyLength() {
+		return 20;
+	}
 
-    @Override
-    public boolean checkKeyExchangeAuthenticationCode(byte[] data, byte[] key,
-            String password) throws NoSuchAlgorithmException,
-            InvalidKeyException {
-        byte[] check = getKeyExchangeAuthenticationCode(data, password);
-        return Arrays.equals(check, key);
-    }
+	@Override
+	public int getIntegrityCheckBaseLength() {
+		return 12;
+	}
 
-    @Override
-    public byte[] getKeyExchangeAuthenticationCode(byte[] data,
-        String password)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-
-        byte[] key = password.getBytes();
-
-        SecretKeySpec sKey = new SecretKeySpec(key, ALGORITHM_NAME);
-        mac.init(sKey);
-
-        return mac.doFinal(data);
-    }
-
-    @Override
-    public boolean doIntegrityCheck(byte[] data, byte[] reference, byte[] sik) throws InvalidKeyException, NoSuchAlgorithmException {
-
-        SecretKeySpec sKey = new SecretKeySpec(sik, ALGORITHM_NAME);
-        mac.init(sKey);
-
-        byte[] result = new byte[getIntegrityCheckBaseLength()];
-
-        System.arraycopy(mac.doFinal(data), 0, result, 0, getIntegrityCheckBaseLength());
-
-        return Arrays.equals(result, reference);
-    }
-
-    @Override
-    public int getKeyLength() {
-        return 20;
-    }
-
-    @Override
-    public int getIntegrityCheckBaseLength() {
-        return 12;
-    }
-
-    @Override
-    public String getAlgorithmName() {
+	@Override
+	public String getAlgorithmName() {
 		return ALGORITHM_NAME;
 	}
 
