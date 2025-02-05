@@ -140,7 +140,7 @@ public class CipherSuite {
         }
     }
 
-	/**
+    /**
      * Returns instance of ConfidentialityAlgorithm class.
      *
      * @throws IllegalArgumentException
@@ -301,9 +301,9 @@ public class CipherSuite {
 	/**
 	 * Creates an instance of IntegrityHmacMd5_128.
 	 *
-     * @return An instance of {@code IntegrityHmacMd5_128}.
-     * @throws IllegalArgumentException if the algorithm initiation fails.
-     */
+	 * @return An instance of {@code IntegrityHmacMd5_128}.
+	 * @throws IllegalArgumentException if the algorithm initiation fails.
+	 */
 	private IntegrityAlgorithm instantiateIntegrityHmacMd5128Algorithm() {
         if (ia == null) {
             try {
@@ -319,9 +319,9 @@ public class CipherSuite {
 	/**
 	 * Creates an instance of IntegrityHmacSha256_128.
 	 *
-     * @return An instance of {@code IntegrityHmacSha256_128}.
-     * @throws IllegalArgumentException if the algorithm initiation fails.
-     */
+	 * @return An instance of {@code IntegrityHmacSha256_128}.
+	 * @throws IllegalArgumentException if the algorithm initiation fails.
+	 */
 	private IntegrityAlgorithm instantiateIntegrityHmacSha256128Algorithm() {
 		if (ia == null) {
             try {
