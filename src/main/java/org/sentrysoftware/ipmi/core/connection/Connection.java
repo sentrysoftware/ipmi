@@ -665,17 +665,14 @@ public class Connection extends TimerTask implements MachineObserver {
         return result;
     }
 
-    /**
-     * @return Default cipher suite (3)
-     */
-    public static CipherSuite getDefaultCipherSuite() {
-        try {
-            return new CipherSuite((byte) DEFAULT_CIPHER_SUITE, new AuthenticationRakpHmacSha1().getCode(),
-                    new ConfidentialityAesCbc128().getCode(), new IntegrityHmacSha1_96().getCode());
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Wrong algorithm in default Cipher suite - SHOULD NOT HAPPEN!!!", e);
-            return null;
-        }
-    }
+	/**
+	 * @return Default cipher suite (3)
+	 */
+	public static CipherSuite getDefaultCipherSuite() {
+
+		return new CipherSuite((byte) DEFAULT_CIPHER_SUITE, new AuthenticationRakpHmacSha1().getCode(),
+				new ConfidentialityAesCbc128().getCode(), new IntegrityHmacSha1_96().getCode());
+
+	}
 
 }
