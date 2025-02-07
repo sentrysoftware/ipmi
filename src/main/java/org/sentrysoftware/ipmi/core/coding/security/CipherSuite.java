@@ -26,6 +26,7 @@ import org.sentrysoftware.ipmi.core.coding.commands.session.GetChannelCipherSuit
 import org.sentrysoftware.ipmi.core.coding.commands.session.GetChannelCipherSuitesResponseData;
 import org.sentrysoftware.ipmi.core.common.TypeConverter;
 
+import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -245,5 +246,21 @@ public class CipherSuite {
 		}
 		return ia;
 	}
-	
+
+	/**
+	 * Constructs a Mac object that implements the given MAC algorithm.
+	 *
+	 * @param algorithmName the name of the algorithm to use
+	 * @return The Mac object that implements the specified MAC algorithm.
+	 */
+	public static Mac newMacInstance(final String algorithmName) {
+		if (algorithmName == null || algorithmName.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			return Mac.getInstance(algorithmName);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalArgumentException("Algorithm " + algorithmName + " is not available", e);
+		}
+	}
 }

@@ -58,9 +58,10 @@ public class ConfidentialityAesCbc128 extends ConfidentialityAlgorithm {
             NoSuchAlgorithmException, NoSuchPaddingException {
         super.initialize(sik, authenticationAlgorithm);
 
-        SecretKeySpec k2 = new SecretKeySpec(sik, authenticationAlgorithm.getAlgorithmName());
+        final String algorithmName = authenticationAlgorithm.getAlgorithmName();
+		SecretKeySpec k2 = new SecretKeySpec(sik, algorithmName);
 
-        Mac mac = Mac.getInstance(authenticationAlgorithm.getAlgorithmName());
+        Mac mac = Mac.getInstance(algorithmName);
         mac.init(k2);
 
         byte[] ckey = mac.doFinal(CONST2);

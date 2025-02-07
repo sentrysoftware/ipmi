@@ -43,7 +43,7 @@ public abstract class AuthenticationAlgorithm {
 	 * Constructs an authentication algorithm.
 	 */
 	protected AuthenticationAlgorithm(String algorithmName) {
-		this(newMacInstance(algorithmName));
+		this(CipherSuite.newMacInstance(algorithmName));
 	}
 
 	/**
@@ -53,23 +53,6 @@ public abstract class AuthenticationAlgorithm {
 	 */
 	private AuthenticationAlgorithm(Mac mac) {
 		this.mac = mac;
-	}
-
-	/**
-	 * Constructs a Mac object that implements the given MAC algorithm.
-	 *
-	 * @param algorithmName the name of the algorithm to use
-	 * @return The Mac object that implements the specified MAC algorithm.
-	 */
-	private static Mac newMacInstance(final String algorithmName) {
-		if (algorithmName == null || algorithmName.trim().isEmpty()) {
-			return null;
-		}
-		try {
-			return Mac.getInstance(algorithmName);
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException("Algorithm " + algorithmName + " is not available", e);
-		}
 	}
 
 	/**

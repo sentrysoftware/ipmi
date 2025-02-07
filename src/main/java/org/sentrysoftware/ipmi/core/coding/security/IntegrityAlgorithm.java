@@ -50,7 +50,7 @@ public abstract class IntegrityAlgorithm {
 	 * Constructs an integrity algorithm.
 	 */
 	protected IntegrityAlgorithm(String algorithmName) {
-		this(newMacInstance(algorithmName));
+		this(CipherSuite.newMacInstance(algorithmName));
 	}
 
 	/**
@@ -60,23 +60,6 @@ public abstract class IntegrityAlgorithm {
 	 */
 	private IntegrityAlgorithm(Mac mac) {
 		this.mac = mac;
-	}
-
-	/**
-	 * Constructs a Mac object that implements the given MAC algorithm.
-	 * 
-	 * @param algorithmName the name of the algorithm to use
-	 * @return The Mac object that implements the specified MAC algorithm. 
-	 */
-	private static Mac newMacInstance(final String algorithmName) {
-		if (algorithmName == null || algorithmName.trim().isEmpty()) {
-			return null;
-		}
-		try {
-			return Mac.getInstance(algorithmName);
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException("Algorithm " + algorithmName + " is not available", e);
-		}
 	}
 
 	/**
