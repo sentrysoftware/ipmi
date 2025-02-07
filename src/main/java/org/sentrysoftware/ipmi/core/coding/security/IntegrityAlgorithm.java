@@ -26,6 +26,11 @@ import org.sentrysoftware.ipmi.core.coding.commands.session.Rakp1;
 import org.sentrysoftware.ipmi.core.common.TypeConverter;
 
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Interface for Integrity Algorithms. All classes extending this one must
@@ -33,75 +38,129 @@ import java.security.InvalidKeyException;
  */
 public abstract class IntegrityAlgorithm {
 
-    protected byte[] sik;
+	protected static final byte[] CONST1 = new byte[20];
+	static {
+		Arrays.fill(CONST1, (byte) 1);
+	}
 
-    public IntegrityAlgorithm() {
+	protected byte[] sik;
+	private final Mac mac;
 
-    }
+	/**
+	 * Constructs an integrity algorithm.
+	 */
+	protected IntegrityAlgorithm(String algorithmName) {
+		this(CipherSuite.newMacInstance(algorithmName));
+	}
 
-    /**
-     * Initializes Integrity Algorithm
-     *
-     * @param sik
-     *            - Session Integrity Key calculated during the opening of the
-     *            session or user password if 'one-key' logins are enabled.
-     */
-    public void initialize(byte[] sik) throws InvalidKeyException {
-        this.sik = sik;
-    }
+	/**
+	 * Constructs an integrity algorithm with the provided MAC.
+	 * 
+	 * @param mac the MAC instance to use
+	 */
+	private IntegrityAlgorithm(Mac mac) {
+		this.mac = mac;
+	}
 
-    /**
-     * Returns the algorithm's ID.
-     */
-    public abstract byte getCode();
+	/**
+	 * Initializes Integrity Algorithm
+	 *
+	 * @param sik - Session Integrity Key calculated during the opening of the
+	 *            session or user password if 'one-key' logins are enabled.
+	 */
+	public void initialize(byte[] sik) throws InvalidKeyException {
+		this.sik = sik;
+		final String algorithmName = getAlgorithmName();
+		
+		SecretKeySpec k1 = new SecretKeySpec(sik, algorithmName);
 
-    /**
-     * Creates AuthCode field for message.
-     *
-     * @param base
-     *            - data starting with the AuthType/Format field up to and
-     *            including the field that immediately precedes the AuthCode
-     *            field
-     * @return AuthCode field. Might be null if empty AuthCOde field is
-     *         generated.
-     *
-     * @see Rakp1#calculateSik(org.sentrysoftware.ipmi.core.coding.commands.session.Rakp1ResponseData)
-     */
-    public abstract byte[] generateAuthCode(byte[] base);
+		mac.init(k1);
+		k1 = new SecretKeySpec(mac.doFinal(CONST1), algorithmName);
 
-    /**
-     * Modifies the algorithm base since with null Auth Code during encoding
-     * Integrity Pad isn't calculated.
-     *
-     * @param base
-     *            - integrity algorithm base without Integrity Pad.
-     * @param authCodeLength
-     *            - expected length of the Auth Code field.
-     * @return - integrity algorithm base with Integrity Pad and updated Pad
-     *         Length field.
-     */
-    protected byte[] injectIntegrityPad(byte[] base, int authCodeLength) {
-        int pad = 0;
-        if ((base.length + authCodeLength) % 4 != 0) {
-            pad = 4 - (base.length + authCodeLength) % 4;
-        }
+		mac.init(k1);
+	}
 
-        if (pad != 0) {
-            byte[] newBase = new byte[base.length + pad];
+	/**
+	 * Returns the algorithm's ID.
+	 */
+	public abstract byte getCode();
 
-            System.arraycopy(base, 0, newBase, 0, base.length - 2);
+	/**
+	 * Creates AuthCode field for message.
+	 *
+	 * @param base - data starting with the AuthType/Format field up to and
+	 *             including the field that immediately precedes the AuthCode field
+	 * @return AuthCode field. Might be null if empty AuthCOde field is generated.
+	 *
+	 * @see Rakp1#calculateSik(org.sentrysoftware.ipmi.core.coding.commands.session.Rakp1ResponseData)
+	 */
+	public byte[] generateAuthCode(final byte[] base) {
 
-            for (int i = base.length - 2; i < base.length - 2 + pad; ++i) {
-                newBase[i] = TypeConverter.intToByte(0xff);
-            }
+		if (sik == null) {
+			throw new NullPointerException("Algorithm not initialized.");
+		}
+		
+		final int authCodeLength = getAuthCodeLength();
+		final byte[] result = new byte[authCodeLength];
+		byte[] updatedBase;
 
-            newBase[newBase.length - 2] = TypeConverter.intToByte(pad);
+		if (base[base.length - 2] == 0) { // pas de padding
+			updatedBase = injectIntegrityPad(base, authCodeLength);
+		} else {
+			updatedBase = base;
+		}
 
-            newBase[newBase.length - 1] = base[base.length - 1];
+		System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, authCodeLength);
 
-            return newBase;
-        } else {
-            return base;
-        }
-    }
+		return result;
+	}
+
+	/**
+	 * Modifies the algorithm base since with null Auth Code during encoding
+	 * Integrity Pad isn't calculated.
+	 *
+	 * @param base           - integrity algorithm base without Integrity Pad.
+	 * @param authCodeLength - expected length of the Auth Code field.
+	 * @return - integrity algorithm base with Integrity Pad and updated Pad Length
+	 *         field.
+	 */
+	protected byte[] injectIntegrityPad(byte[] base, int authCodeLength) {
+		int pad = 0;
+		if ((base.length + authCodeLength) % 4 != 0) {
+			pad = 4 - (base.length + authCodeLength) % 4;
+		}
+
+		if (pad != 0) {
+			byte[] newBase = new byte[base.length + pad];
+
+			System.arraycopy(base, 0, newBase, 0, base.length - 2);
+
+			for (int i = base.length - 2; i < base.length - 2 + pad; ++i) {
+				newBase[i] = TypeConverter.intToByte(0xff);
+			}
+
+			newBase[newBase.length - 2] = TypeConverter.intToByte(pad);
+
+			newBase[newBase.length - 1] = base[base.length - 1];
+
+			return newBase;
+		} else {
+			return base;
+		}
+	}
+
+	/**
+	 * Returns the name of the algorithm.
+	 *
+	 * @return The algorithm name as a {@code String}.
+	 */
+	public abstract String getAlgorithmName();
+
+	/**
+	 * Returns the length of the authentication code
+	 *
+	 * @return The length of the authentication code in bytes.
+	 */
+	public abstract int getAuthCodeLength();
+
 }

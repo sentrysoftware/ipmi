@@ -26,11 +26,13 @@ import org.sentrysoftware.ipmi.core.coding.commands.session.GetChannelCipherSuit
 import org.sentrysoftware.ipmi.core.coding.commands.session.GetChannelCipherSuitesResponseData;
 import org.sentrysoftware.ipmi.core.common.TypeConverter;
 
+import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Provides cipher suite (authentication, confidentiality and integrity
@@ -78,90 +80,57 @@ public class CipherSuite {
      */
     public void initializeAlgorithms(byte[] sik) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
         getIntegrityAlgorithm().initialize(sik);
-        getConfidentialityAlgorithm().initialize(sik);
+        getConfidentialityAlgorithm().initialize(sik, getAuthenticationAlgorithm());
     }
 
-    /**
-     * Returns instance of AuthenticationAlgorithm class.
-     *
-     * @throws IllegalArgumentException
-     *             when authentication algorithm code is incorrect.
-     */
-    public AuthenticationAlgorithm getAuthenticationAlgorithm() {
-        if (aa != null && aa.getCode() != authenticationAlgorithm) {
-            throw new IllegalArgumentException(
-                    "Invalid authentication algorithm code");
-        }
-        switch (authenticationAlgorithm) {
-        case SecurityConstants.AA_RAKP_NONE:
-            if (aa == null) {
-                aa = new AuthenticationRakpNone();
-            }
-            return aa;
-        case SecurityConstants.AA_RAKP_HMAC_SHA1:
-            if (aa == null) {
-                try {
-                    aa = new AuthenticationRakpHmacSha1();
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IllegalArgumentException(
-                            "Initiation of the algorithm failed", e);
-                }
-            }
-            return aa;
-        case SecurityConstants.AA_RAKP_HMAC_MD5:
-            // TODO: RAKP HMAC MD5
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
-        case SecurityConstants.AA_RAKP_HMAC_SHA256:
-            // TODO: RAKP HMAC Sha256
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
-        default:
-            throw new IllegalArgumentException(
-                    "Invalid authentication algorithm.");
+	/**
+	 * Returns instance of AuthenticationAlgorithm class.
+	 *
+	 * @throws IllegalArgumentException when authentication algorithm code is
+	 *                                  incorrect.
+	 */
+	public AuthenticationAlgorithm getAuthenticationAlgorithm() {
+		if (aa != null && aa.getCode() != authenticationAlgorithm) {
+			throw new IllegalArgumentException("Invalid authentication algorithm code");
+		}
+		switch (authenticationAlgorithm) {
+		case SecurityConstants.AA_RAKP_NONE:
+			return instantiateAuthenticationAlgorithm(AuthenticationRakpNone::new);
+		case SecurityConstants.AA_RAKP_HMAC_SHA1:
+			return instantiateAuthenticationAlgorithm(AuthenticationRakpHmacSha1::new);
+		case SecurityConstants.AA_RAKP_HMAC_MD5:
+			return instantiateAuthenticationAlgorithm(AuthenticationRakpHmacMd5::new);
+		case SecurityConstants.AA_RAKP_HMAC_SHA256:
+			return instantiateAuthenticationAlgorithm(AuthenticationRakpHmacSha256::new);
+		default:
+			throw new IllegalArgumentException("Invalid authentication algorithm.");
+		}
+	}
 
-        }
-    }
-
-    /**
-     * Returns instance of IntegrityAlgorithm class.
-     *
-     * @throws IllegalArgumentException
-     *             when integrity algorithm code is incorrect.
-     */
-    public IntegrityAlgorithm getIntegrityAlgorithm() {
-        if (ia != null && ia.getCode() != integrityAlgorithm) {
-            throw new IllegalArgumentException(
-                    "Invalid integrity algorithm code");
-        }
-        switch (integrityAlgorithm) {
-        case SecurityConstants.IA_NONE:
-            if (ia == null) {
-                ia = new IntegrityNone();
-            }
-            return ia;
-        case SecurityConstants.IA_HMAC_SHA1_96:
-            if (ia == null) {
-                try {
-                    ia = new IntegrityHmacSha1_96();
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IllegalArgumentException(
-                            "Initiation of the algorithm failed", e);
-                }
-            }
-            return ia;
-        case SecurityConstants.IA_HMAC_SHA256_128:
-            // TODO: HMAC SHA256-128
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
-        case SecurityConstants.IA_MD5_128:
-            // TODO: MD5-128
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
-        case SecurityConstants.IA_HMAC_MD5_128:
-            // TODO: HMAC MD5-128
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
-        default:
-            throw new IllegalArgumentException("Invalid integrity algorithm.");
-
-        }
-    }
+	/**
+	 * Returns instance of IntegrityAlgorithm class.
+	 *
+	 * @throws IllegalArgumentException when integrity algorithm code is incorrect.
+	 */
+	public IntegrityAlgorithm getIntegrityAlgorithm() {
+		if (ia != null && ia.getCode() != integrityAlgorithm) {
+			throw new IllegalArgumentException("Invalid integrity algorithm code");
+		}
+		switch (integrityAlgorithm) {
+		case SecurityConstants.IA_NONE:
+			return instantiateIntegrityAlgorithm(IntegrityNone::new);
+		case SecurityConstants.IA_HMAC_SHA1_96:
+			return instantiateIntegrityAlgorithm(IntegrityHmacSha1_96::new);
+		case SecurityConstants.IA_MD5_128:
+			// TODO: MD5-128
+		case SecurityConstants.IA_HMAC_MD5_128:
+			return instantiateIntegrityAlgorithm(IntegrityHmacMd5_128::new);
+		case SecurityConstants.IA_HMAC_SHA256_128:
+			return instantiateIntegrityAlgorithm(IntegrityHmacSha256_128::new);
+		default:
+			throw new IllegalArgumentException("Invalid integrity algorithm.");
+		}
+	}
 
     /**
      * Returns instance of ConfidentialityAlgorithm class.
@@ -252,4 +221,46 @@ public class CipherSuite {
     public static CipherSuite getEmpty() {
         return new CipherSuite((byte) 0, (byte) 0, (byte) 0, (byte) 0);
     }
+
+	/**
+	 * Creates an instance of AuthenticationAlgorithm.
+	 *
+	 * @param supplier constructor of the algorithm
+	 */
+	private AuthenticationAlgorithm instantiateAuthenticationAlgorithm(
+			final Supplier<AuthenticationAlgorithm> constructor) {
+		if (aa == null) {
+			aa = constructor.get();
+		}
+		return aa;
+	}
+	
+	/**
+	 * Creates an instance of IntegrityAlgorithm.
+	 *
+	 * @param supplier constructor of the algorithm
+	 */
+	private IntegrityAlgorithm instantiateIntegrityAlgorithm(final Supplier<IntegrityAlgorithm> constructor) {
+		if (ia == null) {
+			ia = constructor.get();
+		}
+		return ia;
+	}
+
+	/**
+	 * Constructs a Mac object that implements the given MAC algorithm.
+	 *
+	 * @param algorithmName the name of the algorithm to use
+	 * @return The Mac object that implements the specified MAC algorithm.
+	 */
+	public static Mac newMacInstance(final String algorithmName) {
+		if (algorithmName == null || algorithmName.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			return Mac.getInstance(algorithmName);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalArgumentException("Algorithm " + algorithmName + " is not available", e);
+		}
+	}
 }

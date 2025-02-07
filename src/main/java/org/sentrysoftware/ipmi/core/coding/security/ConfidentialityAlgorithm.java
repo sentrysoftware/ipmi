@@ -39,6 +39,8 @@ public abstract class ConfidentialityAlgorithm {
      * @param sik
      *            - Session Integrity Key calculated during the opening of the
      *            session or user password if 'one-key' logins are enabled.
+     * @param authenticationAlgorithm
+     *           - Algorithm used for authentication.
      * @throws InvalidKeyException
      *             - when initiation of the algorithm fails
      * @throws NoSuchAlgorithmException
@@ -46,7 +48,7 @@ public abstract class ConfidentialityAlgorithm {
      * @throws NoSuchPaddingException
      *             - when initiation of the algorithm fails
      */
-    public void initialize(byte[] sik) throws InvalidKeyException,
+    public void initialize(byte[] sik, AuthenticationAlgorithm authenticationAlgorithm) throws InvalidKeyException,
             NoSuchAlgorithmException, NoSuchPaddingException {
         this.sik = sik;
     }
