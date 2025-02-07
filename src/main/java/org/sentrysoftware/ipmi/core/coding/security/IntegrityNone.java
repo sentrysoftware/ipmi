@@ -22,23 +22,43 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
+import java.security.InvalidKeyException;
+
 /**
  * Class representing RAKP-None integrity algorithm
  */
 public class IntegrityNone extends IntegrityAlgorithm {
 
-    public IntegrityNone() {
-        super();
-    }
+	/**
+	 * Initiates the IntegrityNone algorithm
+	 */
+	public IntegrityNone() {
+		super("");
+	}
 
-    @Override
-    public byte getCode() {
-        return SecurityConstants.IA_NONE;
-    }
+	@Override
+	public void initialize(byte[] sik) throws InvalidKeyException {
+		this.sik = sik;
+	}
 
-    @Override
-    public byte[] generateAuthCode(byte[] base) {
-        return null;
-    }
+	@Override
+	public byte getCode() {
+		return SecurityConstants.IA_NONE;
+	}
+
+	@Override
+	public byte[] generateAuthCode(byte[] base) {
+		return null;
+	}
+
+	@Override
+	public String getAlgorithmName() {
+		return "";
+	}
+
+	@Override
+	public int getAuthCodeLength() {
+		return 0;
+	}
 
 }
