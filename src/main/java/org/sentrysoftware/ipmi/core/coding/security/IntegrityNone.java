@@ -45,7 +45,7 @@ public class IntegrityNone extends IntegrityAlgorithm {
 
 	@Override
 	public byte[] generateAuthCode(byte[] base) {
-		return new byte[0];
+		return null;
 	}
 
 	@Override
