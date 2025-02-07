@@ -1,7 +1,5 @@
 package org.sentrysoftware.ipmi.core.coding.security;
 
-import java.security.NoSuchAlgorithmException;
-
 /*-
  * ╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲
  * IPMI Java Client

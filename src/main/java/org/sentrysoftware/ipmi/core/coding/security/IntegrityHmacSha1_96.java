@@ -22,8 +22,6 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import java.security.NoSuchAlgorithmException;
-
 /**
  * HMAC-SHA1-96 integrity algorithm.
  */

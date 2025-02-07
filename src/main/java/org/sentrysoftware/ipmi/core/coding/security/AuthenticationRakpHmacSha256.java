@@ -22,8 +22,6 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import java.security.NoSuchAlgorithmException;
-
 /**
  * RAKP-HMAC-SHA256 authentication algorithm.
  */
