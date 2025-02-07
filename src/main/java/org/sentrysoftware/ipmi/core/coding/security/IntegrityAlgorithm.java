@@ -47,21 +47,36 @@ public abstract class IntegrityAlgorithm {
 	private final Mac mac;
 
 	/**
-	 * Constructs an integrity algorithm
-	 *
-	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
+	 * Constructs an integrity algorithm.
 	 */
-	protected IntegrityAlgorithm() throws NoSuchAlgorithmException {
-		mac = Mac.getInstance(getAlgorithmName());
+	protected IntegrityAlgorithm(String algorithmName) {
+		this(newMacInstance(algorithmName));
 	}
 
 	/**
-	 * Constructor that allows skipping HMAC initialization.
-	 *
-	 * @param noMacInit If {@code true}, HMAC will not be initialized.
+	 * Constructs an integrity algorithm with the provided MAC.
+	 * 
+	 * @param mac the MAC instance to use
 	 */
-	protected IntegrityAlgorithm(boolean noMacInit) {
-		this.mac = null;
+	private IntegrityAlgorithm(Mac mac) {
+		this.mac = mac;
+	}
+
+	/**
+	 * Constructs a Mac object that implements the given MAC algorithm.
+	 * 
+	 * @param algorithmName the name of the algorithm to use
+	 * @return The Mac object that implements the specified MAC algorithm. 
+	 */
+	private static Mac newMacInstance(final String algorithmName) {
+		if (algorithmName == null || algorithmName.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			return Mac.getInstance(algorithmName);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalArgumentException("Algorithm " + algorithmName + " is not available", e);
+		}
 	}
 
 	/**
@@ -72,11 +87,12 @@ public abstract class IntegrityAlgorithm {
 	 */
 	public void initialize(byte[] sik) throws InvalidKeyException {
 		this.sik = sik;
-
-		SecretKeySpec k1 = new SecretKeySpec(sik, getAlgorithmName());
+		final String algorithmName = getAlgorithmName();
+		
+		SecretKeySpec k1 = new SecretKeySpec(sik, algorithmName);
 
 		mac.init(k1);
-		k1 = new SecretKeySpec(mac.doFinal(CONST1), getAlgorithmName());
+		k1 = new SecretKeySpec(mac.doFinal(CONST1), algorithmName);
 
 		mac.init(k1);
 	}
@@ -100,17 +116,18 @@ public abstract class IntegrityAlgorithm {
 		if (sik == null) {
 			throw new NullPointerException("Algorithm not initialized.");
 		}
-
-		byte[] result = new byte[getAuthCodeLength()];
+		
+		final int authCodeLength = getAuthCodeLength();
+		final byte[] result = new byte[authCodeLength];
 		byte[] updatedBase;
 
 		if (base[base.length - 2] == 0) { // pas de padding
-			updatedBase = injectIntegrityPad(base, getAuthCodeLength());
+			updatedBase = injectIntegrityPad(base, authCodeLength);
 		} else {
 			updatedBase = base;
 		}
 
-		System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, getAuthCodeLength());
+		System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, authCodeLength);
 
 		return result;
 	}

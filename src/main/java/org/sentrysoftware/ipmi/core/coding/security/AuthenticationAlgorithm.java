@@ -40,21 +40,36 @@ public abstract class AuthenticationAlgorithm {
 	private final Mac mac;
 
 	/**
-	 * Constructs an authentication algorithm
-	 *
-	 * @throws NoSuchAlgorithmException
+	 * Constructs an authentication algorithm.
 	 */
-	protected AuthenticationAlgorithm() throws NoSuchAlgorithmException {
-		this.mac = Mac.getInstance(getAlgorithmName());
+	protected AuthenticationAlgorithm(String algorithmName) {
+		this(newMacInstance(algorithmName));
 	}
 
 	/**
-	 * Constructs an authentication algorithm instance without initializing the MAC.
+	 * Constructs an authentication algorithm with the provided MAC.
 	 *
-	 * @param noMacInit If {@code true}, the MAC instance will not be initialized.
+	 * @param mac the MAC instance to use
 	 */
-	protected AuthenticationAlgorithm(boolean noMacInit) {
-		this.mac = null;
+	private AuthenticationAlgorithm(Mac mac) {
+		this.mac = mac;
+	}
+
+	/**
+	 * Constructs a Mac object that implements the given MAC algorithm.
+	 *
+	 * @param algorithmName the name of the algorithm to use
+	 * @return The Mac object that implements the specified MAC algorithm.
+	 */
+	private static Mac newMacInstance(final String algorithmName) {
+		if (algorithmName == null || algorithmName.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			return Mac.getInstance(algorithmName);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalArgumentException("Algorithm " + algorithmName + " is not available", e);
+		}
 	}
 
 	/**
@@ -101,7 +116,7 @@ public abstract class AuthenticationAlgorithm {
 	public byte[] getKeyExchangeAuthenticationCode(byte[] data, String password)
 			throws NoSuchAlgorithmException, InvalidKeyException {
 
-		byte[] key = password.getBytes();
+		final byte[] key = password.getBytes();
 
 		SecretKeySpec sKey = new SecretKeySpec(key, getAlgorithmName());
 		mac.init(sKey);
@@ -126,10 +141,11 @@ public abstract class AuthenticationAlgorithm {
 
 		SecretKeySpec sKey = new SecretKeySpec(sik, getAlgorithmName());
 		mac.init(sKey);
+		
+		final int integrityCheckLength = getIntegrityCheckBaseLength();
+		final byte[] result = new byte[integrityCheckLength];
 
-		byte[] result = new byte[getIntegrityCheckBaseLength()];
-
-		System.arraycopy(mac.doFinal(data), 0, result, 0, getIntegrityCheckBaseLength());
+		System.arraycopy(mac.doFinal(data), 0, result, 0, integrityCheckLength);
 
 		return Arrays.equals(result, reference);
 	}

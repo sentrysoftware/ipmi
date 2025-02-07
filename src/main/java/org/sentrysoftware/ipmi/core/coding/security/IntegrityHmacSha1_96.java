@@ -33,12 +33,9 @@ public class IntegrityHmacSha1_96 extends IntegrityAlgorithm {
 
     /**
      * Initiates HMAC-SHA1-96 integrity algorithm.
-     *
-     * @throws NoSuchAlgorithmException
-     *             - when initiation of the algorithm fails
      */
-    public IntegrityHmacSha1_96() throws NoSuchAlgorithmException {
-        super();
+    public IntegrityHmacSha1_96() {
+        super(ALGORITHM_NAME);
     }
 
     @Override

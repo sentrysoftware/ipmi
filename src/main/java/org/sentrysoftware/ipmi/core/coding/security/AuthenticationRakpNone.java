@@ -31,13 +31,9 @@ public class AuthenticationRakpNone extends AuthenticationAlgorithm {
 
 	/**
      * Constructs an instance of the RAKP-None authentication algorithm.
-     * 
-     * Since this algorithm does not require cryptographic operations, it uses 
-     * {@code super(true)} to skip MAC initialization in the parent class.
-     * 
      */
 	public AuthenticationRakpNone() {
-		super(true);
+		super("");
 	}
 
 	@Override

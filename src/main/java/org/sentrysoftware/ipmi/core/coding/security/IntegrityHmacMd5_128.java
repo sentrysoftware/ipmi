@@ -33,11 +33,9 @@ public class IntegrityHmacMd5_128 extends IntegrityAlgorithm {
 
 	/**
 	 * Initiates HMAC-MD5-128 integrity algorithm.
-	 *
-	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
 	 */
-	public IntegrityHmacMd5_128() throws NoSuchAlgorithmException {
-		super();
+	public IntegrityHmacMd5_128() {
+		super(ALGORITHM_NAME);
 	}
 
 	@Override

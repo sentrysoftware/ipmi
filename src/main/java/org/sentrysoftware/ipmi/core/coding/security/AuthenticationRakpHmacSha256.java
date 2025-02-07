@@ -33,11 +33,9 @@ public class AuthenticationRakpHmacSha256 extends AuthenticationAlgorithm {
 
 	/**
 	 * Initiates RAKP-HMAC-SHA256 authentication algorithm.
-	 *
-	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
 	 */
-	public AuthenticationRakpHmacSha256() throws NoSuchAlgorithmException {
-		super();
+	public AuthenticationRakpHmacSha256() {
+		super(ALGORITHM_NAME);
 	}
 
 	@Override

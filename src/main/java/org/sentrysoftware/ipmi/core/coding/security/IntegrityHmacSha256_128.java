@@ -33,11 +33,9 @@ public class IntegrityHmacSha256_128 extends IntegrityAlgorithm {
 
 	/**
 	 * Initiates HMAC-SHA1-96 integrity algorithm.
-	 *
-	 * @throws NoSuchAlgorithmException when initiation of the algorithm fails
 	 */
-	public IntegrityHmacSha256_128() throws NoSuchAlgorithmException {
-		super();
+	public IntegrityHmacSha256_128() {
+		super(ALGORITHM_NAME);
 	}
 
 	@Override

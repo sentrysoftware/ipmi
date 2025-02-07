@@ -29,8 +29,11 @@ import java.security.InvalidKeyException;
  */
 public class IntegrityNone extends IntegrityAlgorithm {
 
+	/**
+	 * Initiates the IntegrityNone algorithm
+	 */
 	public IntegrityNone() {
-		super(true);
+		super("");
 	}
 
 	@Override

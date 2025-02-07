@@ -33,11 +33,9 @@ public class AuthenticationRakpHmacMd5 extends AuthenticationAlgorithm {
 
 	/**
 	 * Initiates RAKP-HMAC-MD5 authentication algorithm.
-	 *
-	 * @throws NoSuchAlgorithmException - when initiation of the algorithm fails
 	 */
-	public AuthenticationRakpHmacMd5() throws NoSuchAlgorithmException {
-		super();
+	public AuthenticationRakpHmacMd5() {
+		super(ALGORITHM_NAME);
 	}
 
 	@Override
