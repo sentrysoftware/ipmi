@@ -24,6 +24,7 @@ package org.sentrysoftware.ipmi.core.coding.security;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -38,8 +39,10 @@ import org.sentrysoftware.ipmi.core.common.TypeConverter;
  */
 public class ConfidentialityAesCbc128 extends ConfidentialityAlgorithm {
 
-    private static final byte[] CONST2 = new byte[] { 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+	protected static final byte[] CONST2 = new byte[20];
+	static {
+		Arrays.fill(CONST2, (byte) 2);
+	}
 
     private Cipher cipher;
 
@@ -51,13 +54,14 @@ public class ConfidentialityAesCbc128 extends ConfidentialityAlgorithm {
     }
 
     @Override
-    public void initialize(byte[] sik) throws InvalidKeyException,
+    public void initialize(byte[] sik, AuthenticationAlgorithm authenticationAlgorithm) throws InvalidKeyException,
             NoSuchAlgorithmException, NoSuchPaddingException {
-        super.initialize(sik);
+        super.initialize(sik, authenticationAlgorithm);
 
-        SecretKeySpec k2 = new SecretKeySpec(sik, "HmacSHA1");
+        final String algorithmName = authenticationAlgorithm.getAlgorithmName();
+		SecretKeySpec k2 = new SecretKeySpec(sik, algorithmName);
 
-        Mac mac = Mac.getInstance("HmacSHA1");
+        Mac mac = Mac.getInstance(algorithmName);
         mac.init(k2);
 
         byte[] ckey = mac.doFinal(CONST2);

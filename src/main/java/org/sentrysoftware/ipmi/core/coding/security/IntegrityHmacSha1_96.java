@@ -22,43 +22,18 @@ package org.sentrysoftware.ipmi.core.coding.security;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 /**
  * HMAC-SHA1-96 integrity algorithm.
  */
 public class IntegrityHmacSha1_96 extends IntegrityAlgorithm {
 
     public static final String ALGORITHM_NAME = "HmacSHA1";
-    private Mac mac;
-
-    private static final byte[] CONST1 = new byte[] { 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
     /**
      * Initiates HMAC-SHA1-96 integrity algorithm.
-     *
-     * @throws NoSuchAlgorithmException
-     *             - when initiation of the algorithm fails
      */
-    public IntegrityHmacSha1_96() throws NoSuchAlgorithmException {
-        mac = Mac.getInstance(ALGORITHM_NAME);
-    }
-
-    @Override
-    public void initialize(byte[] sik) throws InvalidKeyException {
-        super.initialize(sik);
-
-        SecretKeySpec k1 = new SecretKeySpec(sik, ALGORITHM_NAME);
-
-        mac.init(k1);
-
-        k1 = new SecretKeySpec(mac.doFinal(CONST1), ALGORITHM_NAME);
-
-        mac.init(k1);
+    public IntegrityHmacSha1_96() {
+        super(ALGORITHM_NAME);
     }
 
     @Override
@@ -67,23 +42,12 @@ public class IntegrityHmacSha1_96 extends IntegrityAlgorithm {
     }
 
     @Override
-    public byte[] generateAuthCode(final byte[] base) {
-        if (sik == null) {
-            throw new NullPointerException("Algorithm not initialized.");
-        }
-
-        byte[] result = new byte[12];
-        byte[] updatedBase;
-
-        if(base[base.length - 2] == 0 /*there are no integrity pad bytes*/) {
-            updatedBase = injectIntegrityPad(base,12);
-        } else {
-            updatedBase = base;
-        }
-
-        System.arraycopy(mac.doFinal(updatedBase), 0, result, 0, 12);
-
-        return result;
+    public String getAlgorithmName() {
+        return ALGORITHM_NAME;
     }
-
+    
+	@Override
+	public int getAuthCodeLength() {
+	    return 12;
+	}
 }

@@ -23,27 +23,27 @@ package org.sentrysoftware.ipmi.core.coding.security;
  */
 
 /**
- * RAKP-HMAC-SHA1 authentication algorithm.
+ * RAKP-HMAC-MD5 authentication algorithm.
  */
-public class AuthenticationRakpHmacSha1 extends AuthenticationAlgorithm {
-	
-	private static final String ALGORITHM_NAME = "HmacSHA1";
-	
+public class AuthenticationRakpHmacMd5 extends AuthenticationAlgorithm {
+
+	private static final String ALGORITHM_NAME = "HmacMD5";
+
 	/**
-	 * Initiates RAKP-HMAC-SHA1 authentication algorithm.
+	 * Initiates RAKP-HMAC-MD5 authentication algorithm.
 	 */
-	public AuthenticationRakpHmacSha1() {
+	public AuthenticationRakpHmacMd5() {
 		super(ALGORITHM_NAME);
 	}
 
 	@Override
 	public byte getCode() {
-		return SecurityConstants.AA_RAKP_HMAC_SHA1;
+		return SecurityConstants.AA_RAKP_HMAC_MD5;
 	}
 
 	@Override
 	public int getKeyLength() {
-		return 20;
+		return 16;
 	}
 
 	@Override
