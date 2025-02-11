@@ -104,7 +104,7 @@ public abstract class IntegrityAlgorithm {
 		final byte[] result = new byte[authCodeLength];
 		byte[] updatedBase;
 
-		if (base[base.length - 2] == 0) { // pas de padding
+		if (base[base.length - 2] == 0) { // No padding
 			updatedBase = injectIntegrityPad(base, authCodeLength);
 		} else {
 			updatedBase = base;
