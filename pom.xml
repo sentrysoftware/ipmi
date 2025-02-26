@@ -9,7 +9,7 @@
 
 	<groupId>org.sentrysoftware</groupId>
 	<artifactId>ipmi</artifactId>
-	<version>1.1.01-SNAPSHOT</version>
+	<version>1.2.01-SNAPSHOT</version>
 
 	<name>IPMI Java Client</name>
 	<description>IPMI Client Library for Java</description>
@@ -78,7 +78,7 @@
 
 		<!-- Reproducible Build -->
 		<!-- See https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
-		<project.build.outputTimestamp>2024-06-07T13:02:46Z</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2025-02-11T09:20:48Z</project.build.outputTimestamp>
 	</properties>
 
 	<dependencyManagement>
@@ -86,7 +86,7 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.10.1</version>
+				<version>5.11.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

@@ -123,6 +123,7 @@ public class CipherSuite {
 			return instantiateIntegrityAlgorithm(IntegrityHmacSha1_96::new);
 		case SecurityConstants.IA_MD5_128:
 			// TODO: MD5-128
+			throw new IllegalArgumentException("Integrity algorithm MD5-128 is not yet implemented.");
 		case SecurityConstants.IA_HMAC_MD5_128:
 			return instantiateIntegrityAlgorithm(IntegrityHmacMd5_128::new);
 		case SecurityConstants.IA_HMAC_SHA256_128:
@@ -156,10 +157,10 @@ public class CipherSuite {
             return ca;
         case SecurityConstants.CA_XRC4_40:
             // TODO: XRc4-40
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
+            throw new IllegalArgumentException("Confidentiality algorithm XRC4-40 is not yet implemented.");
         case SecurityConstants.CA_XRC4_128:
             // TODO: XRc4-128
-            throw new IllegalArgumentException(NOT_YET_IMPLEMENTED_MESSAGE);
+            throw new IllegalArgumentException("Confidentiality algorithm XRC4-128 is not yet implemented.");
         default:
             throw new IllegalArgumentException(
                     "Invalid confidentiality algorithm.");
